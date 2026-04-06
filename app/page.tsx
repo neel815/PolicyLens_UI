@@ -6,7 +6,9 @@ import {
   useEffect,
 } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { savePolicy } from "@/lib/storage";
+import { getAuthHeader, isAuthenticated } from "@/lib/auth";
 import { SavedPolicy } from "@/types/analysis";
 
 // TypeScript Interfaces
@@ -21,6 +23,7 @@ type AppState = "idle" | "loading" | "results";
 
 export default function Home() {
   // State
+  const router = useRouter();
   const [appState, setAppState] = useState<AppState>("idle");
   const [file, setFile] = useState<File | null>(null);
   const [fileName, setFileName] = useState("");
@@ -29,6 +32,15 @@ export default function Home() {
   const [result, setResult] = useState<AnalysisData | null>(null);
   const [loadingStep, setLoadingStep] = useState(0);
   const [scoreBarWidth, setScoreBarWidth] = useState(0);
+  const [dbPolicyId, setDbPolicyId] = useState<number | null>(null);
+
+  // Check auth on mount
+  useEffect(() => {
+    if (!isAuthenticated()) {
+      // Redirect to login
+      router.push("/login");
+    }
+  }, [router]);
 
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -105,12 +117,17 @@ export default function Home() {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
       const response = await fetch(`${apiUrl}/api/analyze`, {
         method: "POST",
+        headers: getAuthHeader(),
         body: formData,
       });
 
       const data = await response.json();
 
       if (!response.ok) {
+        if (response.status === 401) {
+          router.push("/login");
+          return;
+        }
         throw new Error(data.detail || "Analysis failed");
       }
 
@@ -120,6 +137,7 @@ export default function Home() {
 
       setResult(data.data);
       setAppState("results");
+      setDbPolicyId(data.data.policy_id || null);  // store DB id
       setTimeout(() => setScoreBarWidth(data.data.coverage_score * 10), 100);
 
       // Save to localStorage
@@ -151,6 +169,7 @@ export default function Home() {
     setResult(null);
     setError("");
     setScoreBarWidth(0);
+    setDbPolicyId(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
@@ -643,8 +662,27 @@ export default function Home() {
               </button>
             </div>
 
-            {/* View Dashboard Link */}
-            <div className="mt-4 text-center">
+            {/* View Dashboard Link and Simulate Claim Button */}
+            <div className="mt-4 flex flex-col gap-2 items-center">
+              <Link
+                href={dbPolicyId ? `/simulate?id=${dbPolicyId}` : '/simulate'}
+                className="w-full flex items-center justify-center gap-2 bg-[#F0EEE8] border border-[#E5E3DC] text-[#0F1117] rounded-xl py-[15px] px-6 text-[15px] font-medium hover:bg-[#E5E3DC] transition-colors"
+              >
+                <svg
+                  className="w-[18px] h-[18px]"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M13 10V3L4 14h7v7l9-11h-7z"
+                  />
+                </svg>
+                Simulate a Claim
+              </Link>
               <Link
                 href="/dashboard"
                 className="inline-flex items-center gap-2 text-[13px] text-[#1A3FBE] hover:underline font-medium"

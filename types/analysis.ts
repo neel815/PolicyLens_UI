@@ -19,3 +19,21 @@ export interface SavedPolicy {
   analyzedAt: string;
   data: AnalysisData;
 }
+
+export interface SimulateRequest {
+  scenario: string;
+  analysis: AnalysisData & {
+    policy_type?: string;
+    score_reason?: string;
+  };
+}
+
+export interface SimulateResult {
+  approval_chance: number;
+  verdict: 'Likely Approved' | 'Likely Rejected' | 'Partial Coverage' | 'Unclear';
+  covered_aspects: string[];
+  not_covered_aspects: string[];
+  risks: string[];
+  documents_needed: string[];
+  reasoning: string;
+}

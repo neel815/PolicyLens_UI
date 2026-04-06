@@ -1,30 +1,63 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { getSavedPolicies, deletePolicy, clearAllPolicies } from '@/lib/storage';
-import { SavedPolicy } from '@/types/analysis';
+import { apiFetch, isAuthenticated } from '@/lib/auth';
+
+interface DashboardPolicy {
+  id: number              // integer from DB (not UUID string)
+  file_name: string
+  file_size: string
+  policy_type: string
+  coverage_score: number
+  created_at: string
+}
 
 export default function Dashboard() {
-  const [policies, setPolicies] = useState<SavedPolicy[]>([]);
-  const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+  const router = useRouter();
+  const [policies, setPolicies] = useState<DashboardPolicy[]>([]);
+  const [loading, setLoading] = useState(true)  // NEW
+  const [deleteConfirm, setDeleteConfirm] = useState<number | null>(null);
   const [showClearConfirm, setShowClearConfirm] = useState(false);
 
   useEffect(() => {
-    setPolicies(getSavedPolicies());
-  }, []);
+    // Check auth on mount
+    if (!isAuthenticated()) {
+      router.push("/login");
+      return;
+    }
+    fetchPolicies();
+  }, [router]);
 
-  const handleDelete = (id: string) => {
-    deletePolicy(id);
-    setPolicies(getSavedPolicies());
-    setDeleteConfirm(null);
-  };
+  async function fetchPolicies() {
+    setLoading(true);
+    try {
+      const res = await apiFetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/policies`
+      );
+      if (!res.ok) throw new Error('Failed to fetch');
+      const data = await res.json();
+      setPolicies(data);
+    } catch (err) {
+      console.error('Failed to load policies:', err);
+    } finally {
+      setLoading(false);
+    }
+  }
 
-  const handleClearAll = () => {
-    clearAllPolicies();
-    setPolicies([]);
-    setShowClearConfirm(false);
-  };
+  async function handleDelete(id: number) {
+    try {
+      await apiFetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/policies/${id}`,
+        { method: 'DELETE' }
+      );
+      setPolicies(prev => prev.filter(p => p.id !== id));
+      setDeleteConfirm(null);
+    } catch (err) {
+      console.error('Failed to delete:', err);
+    }
+  }
 
   const formatDate = (isoString: string): string => {
     const date = new Date(isoString);
@@ -101,18 +134,10 @@ export default function Dashboard() {
                 : 'No analyses saved yet'}
             </p>
           </div>
-          {policies.length > 0 && (
-            <button
-              onClick={() => setShowClearConfirm(true)}
-              className="text-[13px] text-[#DC2626] hover:bg-[#FEF2F2] px-3 py-1.5 rounded-lg transition-colors border border-transparent hover:border-red-100"
-            >
-              Clear all
-            </button>
-          )}
         </div>
       </div>
 
-      {/* Clear All Confirmation Banner */}
+      {/* Clear All Confirmation Banner - REMOVED */}
       {showClearConfirm && (
         <div className="max-w-[960px] mx-auto px-6 mb-4">
           <div className="bg-[#FEF2F2] border border-red-200 rounded-xl p-4 flex items-center justify-between gap-4">
@@ -120,12 +145,6 @@ export default function Dashboard() {
               Remove all {policies.length} saved analyses? This cannot be undone.
             </span>
             <div className="flex items-center gap-2 flex-shrink-0">
-              <button
-                onClick={handleClearAll}
-                className="bg-[#DC2626] text-white text-[13px] font-medium px-4 py-2 rounded-lg hover:bg-[#B91C1C] transition-colors"
-              >
-                Yes, clear all
-              </button>
               <button
                 onClick={() => setShowClearConfirm(false)}
                 className="text-[13px] text-[#6B7280] px-4 py-2 rounded-lg hover:bg-[#F0EEE8] transition-colors"
@@ -138,7 +157,7 @@ export default function Dashboard() {
       )}
 
       {/* Stats Bar */}
-      {policies.length > 0 && (
+      {!loading && policies.length > 0 && (
         <div className="max-w-[960px] mx-auto px-6 mb-8">
           <div className="grid grid-cols-3 gap-4">
             {/* Total Analyzed */}
@@ -164,7 +183,7 @@ export default function Dashboard() {
               <div>
                 <div className="text-[11px] text-[#9CA3AF] uppercase tracking-wide mb-0.5">Avg coverage score</div>
                 <div className="text-[18px] font-medium text-[#0F1117]">
-                  {(policies.reduce((sum, p) => sum + p.data.coverage_score, 0) / policies.length).toFixed(1)}/10
+                  {(policies.reduce((sum, p) => sum + p.coverage_score, 0) / policies.length).toFixed(1)}/10
                 </div>
               </div>
             </div>
@@ -178,7 +197,7 @@ export default function Dashboard() {
               </div>
               <div>
                 <div className="text-[11px] text-[#9CA3AF] uppercase tracking-wide mb-0.5">Latest analysis</div>
-                <div className="text-[18px] font-medium text-[#0F1117] truncate">{formatDate(policies[0].analyzedAt)}</div>
+                <div className="text-[18px] font-medium text-[#0F1117] truncate">{formatDate(policies[0]?.created_at || '')}</div>
               </div>
             </div>
           </div>
@@ -186,7 +205,16 @@ export default function Dashboard() {
       )}
 
       {/* Policy Cards Grid or Empty State */}
-      {policies.length === 0 ? (
+      {loading && (
+        <div className="flex items-center justify-center py-24 max-w-[960px] mx-auto px-6">
+          <div className="flex flex-col items-center gap-4">
+            <div className="w-8 h-8 rounded-full border-2 border-[#E5E3DC] border-t-[#1A3FBE] animate-spin"/>
+            <p className="text-[14px] text-[#6B7280]">Loading policies...</p>
+          </div>
+        </div>
+      )}
+
+      {!loading && policies.length === 0 ? (
         // Empty State
         <div className="flex flex-col items-center justify-center py-24 text-center max-w-[960px] mx-auto px-6">
           <div className="w-16 h-16 bg-[#F0EEE8] rounded-2xl flex items-center justify-center mx-auto mb-5">
@@ -210,13 +238,13 @@ export default function Dashboard() {
             Analyze your first policy
           </Link>
         </div>
-      ) : (
+      ) : !loading && (
         // Policy Cards Grid
         <div className="max-w-[960px] mx-auto px-6 pb-12">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {policies.map((policy) => {
-              const scoreColor = getScoreColor(policy.data.coverage_score);
-              const scoreBarColor = getScoreBarColor(policy.data.coverage_score);
+              const scoreColor = getScoreColor(policy.coverage_score);
+              const scoreBarColor = getScoreBarColor(policy.coverage_score);
 
               return (
                 <div
@@ -265,18 +293,18 @@ export default function Dashboard() {
                       <div className="flex items-start justify-between mb-4">
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 bg-[#F0EEE8] rounded-xl flex items-center justify-center text-[#6B7280]">
-                            {getPolicyIcon(policy.policyType)}
+                            {getPolicyIcon(policy.policy_type)}
                           </div>
                           <div>
-                            <div className="text-[13px] font-medium text-[#0F1117]">{policy.policyType} Insurance</div>
-                            <div className="text-[11px] text-[#9CA3AF] mt-0.5">{formatDate(policy.analyzedAt)}</div>
+                            <div className="text-[13px] font-medium text-[#0F1117]">{policy.policy_type} Insurance</div>
+                            <div className="text-[11px] text-[#9CA3AF] mt-0.5">{formatDate(policy.created_at)}</div>
                           </div>
                         </div>
                         <div
                           className="text-[13px] font-semibold px-2.5 py-1 rounded-lg"
                           style={{ color: scoreColor.text, backgroundColor: scoreColor.bg }}
                         >
-                          {policy.data.coverage_score}/10
+                          {policy.coverage_score}/10
                         </div>
                       </div>
 
@@ -285,36 +313,27 @@ export default function Dashboard() {
                         <svg className="w-3 h-3 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
                           <path d="M19 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 16H5V4h14v14z" />
                         </svg>
-                        {policy.fileName}
+                        {policy.file_name}
                       </div>
 
-                      {/* Row 3: Mini stats */}
-                      <div className="flex gap-2 flex-wrap mb-4">
-                        <div className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-[#ECFDF5] text-[#059669]">
-                          {policy.data.covered_events.length} covered
-                        </div>
-                        <div className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-[#FEF2F2] text-[#DC2626]">
-                          {policy.data.exclusions.length} exclusions
-                        </div>
-                        <div className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-[#FFFBEB] text-[#D97706]">
-                          {policy.data.risky_clauses.length} risky
-                        </div>
-                      </div>
-
-                      {/* Row 4: Action buttons */}
-                      <div className="flex items-center justify-between border-t border-[#E5E3DC] pt-4 mt-1">
-                        <div className="text-[13px] text-[#1A3FBE] font-medium">View details →</div>
+                      {/* Row 3: Mini Footer */}
+                      <div className="flex items-center justify-between border-t border-[#E5E3DC] pt-4 mt-4">
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
                             setDeleteConfirm(policy.id);
                           }}
-                          className="w-7 h-7 rounded-lg flex items-center justify-center text-[#9CA3AF] hover:text-[#DC2626] hover:bg-[#FEF2F2] transition-colors"
+                          className="text-[12px] text-[#9CA3AF] hover:text-[#DC2626] transition-colors"
                         >
-                          <svg className="w-[14px] h-[14px]" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-9l-1 1H5v2h14V4z" />
-                          </svg>
+                          Delete
                         </button>
+                        <Link
+                          href={`/simulate?id=${policy.id}`}
+                          onClick={(e) => e.stopPropagation()}
+                          className="text-[12px] text-[#1A3FBE] font-medium hover:underline flex items-center gap-1"
+                        >
+                          Simulate →
+                        </Link>
                       </div>
                     </div>
                   )}

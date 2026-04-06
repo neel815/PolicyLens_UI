@@ -7,7 +7,9 @@ import {
 } from "next/font/google";
 import "./globals.css";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { isAuthenticated, logout, getUser } from '@/lib/auth';
 
 const instrumentSerif = Instrument_Serif({
   subsets: ["latin"],
@@ -32,6 +34,15 @@ function RootLayoutContent({
   children: React.ReactNode;
 }>) {
   const pathname = usePathname();
+  const router = useRouter();
+  const [authed, setAuthed] = useState(false);
+  const [userName, setUserName] = useState('');
+
+  useEffect(() => {
+    setAuthed(isAuthenticated());
+    const user = getUser();
+    if (user) setUserName(user.full_name || user.username);
+  }, [pathname]);
 
   const isActive = (path: string) => pathname === path;
 
@@ -70,26 +81,53 @@ function RootLayoutContent({
 
           {/* Right: Nav Links */}
           <div className="flex items-center gap-6">
-            <Link
-              href="/"
-              className={`text-[13px] font-medium transition-colors ${
-                isActive('/') 
-                  ? 'text-[#0F1117]' 
-                  : 'text-[#6B7280] hover:text-[#0F1117]'
-              }`}
-            >
-              Analyze
-            </Link>
-            <Link
-              href="/dashboard"
-              className={`text-[13px] font-medium transition-colors ${
-                isActive('/dashboard') 
-                  ? 'text-[#0F1117]' 
-                  : 'text-[#6B7280] hover:text-[#0F1117]'
-              }`}
-            >
-              Dashboard
-            </Link>
+            {authed && (
+              <>
+                <Link
+                  href="/"
+                  className={`text-[13px] font-medium transition-colors ${
+                    isActive('/') 
+                      ? 'text-[#0F1117]' 
+                      : 'text-[#6B7280] hover:text-[#0F1117]'
+                  }`}
+                >
+                  Analyze
+                </Link>
+                <Link
+                  href="/dashboard"
+                  className={`text-[13px] font-medium transition-colors ${
+                    isActive('/dashboard') 
+                      ? 'text-[#0F1117]' 
+                      : 'text-[#6B7280] hover:text-[#0F1117]'
+                  }`}
+                >
+                  Dashboard
+                </Link>
+              </>
+            )}
+            {authed ? (
+              <div className="flex items-center gap-4 pl-4 border-l border-[#E5E3DC]">
+                <span className="text-[13px] text-[#6B7280]">
+                  Hi, {userName}
+                </span>
+                <button
+                  onClick={() => {
+                    logout();
+                    router.push('/login');
+                  }}
+                  className="text-[13px] text-[#DC2626] hover:text-[#B91C1C] font-medium cursor-pointer transition-colors"
+                >
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <Link
+                href="/login"
+                className="text-[13px] text-[#1A3FBE] font-medium"
+              >
+                Login
+              </Link>
+            )}
           </div>
         </nav>
 

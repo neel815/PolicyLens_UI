@@ -1,3 +1,7 @@
+// NOTE: localStorage is used as a backup/cache only.
+// Primary data source is the backend DB via /api/policies.
+// This will be deprecated once full DB integration is complete.
+
 import { SavedPolicy } from '@/types/analysis'
 
 const STORAGE_KEY = 'policylens_analyses'
