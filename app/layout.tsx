@@ -5,6 +5,7 @@ import {
 } from "next/font/google";
 import "./globals.css";
 import { Navbar } from '@/components/Navbar';
+import { PageLoader } from '@/components/PageLoader';
 
 const instrumentSerif = Instrument_Serif({
   subsets: ["latin"],
@@ -36,6 +37,7 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="min-h-screen bg-[#F7F6F2] font-[family-name:var(--font-sans)]">
+        <PageLoader />
         <Navbar />
         {children}
       </body>
