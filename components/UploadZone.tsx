@@ -1,7 +1,7 @@
 "use client";
 
 import { ChangeEvent, DragEvent, useState } from "react";
-import { FileText } from "lucide-react";
+import { FileText, Info } from "lucide-react";
 
 interface UploadZoneProps {
   onFileSelect: (file: File) => void;
@@ -60,7 +60,19 @@ export default function UploadZone({
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full space-y-4">
+      {/* Info Box */}
+      <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 flex items-start gap-3">
+        <Info className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+        <div>
+          <p className="text-sm text-blue-900 font-medium">Upload your Policy Document</p>
+          <p className="text-sm text-blue-700 mt-1">
+            The PDF your insurer sent after you purchased the policy not a brochure or claim form
+          </p>
+        </div>
+      </div>
+
+      {/* Upload Zone */}
       <div
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
