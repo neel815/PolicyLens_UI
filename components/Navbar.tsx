@@ -61,6 +61,16 @@ export function Navbar() {
               Analyze
             </Link>
             <Link
+              href="/battle"
+              className={`text-[13px] font-medium transition-colors ${
+                isActive('/battle') 
+                  ? 'text-[#0F1117]' 
+                  : 'text-[#6B7280] hover:text-[#0F1117]'
+              }`}
+            >
+              Battle
+            </Link>
+            <Link
               href="/dashboard"
               className={`text-[13px] font-medium transition-colors ${
                 isActive('/dashboard') 
