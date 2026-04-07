@@ -33,6 +33,7 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${instrumentSerif.variable} ${dmSans.variable}`}
+      suppressHydrationWarning
     >
       <body className="min-h-screen bg-[#F7F6F2] font-[family-name:var(--font-sans)]">
         <Navbar />
