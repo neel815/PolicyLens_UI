@@ -104,6 +104,7 @@ export default function SimulatePage() {
         },
         body: JSON.stringify({
           scenario: scenario.trim(),
+          policy_id: selectedPolicy.id,
           analysis: {
             covered_events: selectedPolicy.covered_events,
             exclusions: selectedPolicy.exclusions,

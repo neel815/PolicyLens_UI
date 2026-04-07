@@ -247,15 +247,11 @@ export default function Dashboard() {
               const scoreBarColor = getScoreBarColor(policy.coverage_score);
 
               return (
-                <div
+                <Link
                   key={policy.id}
-                  onClick={() => {
-                    if (deleteConfirm !== policy.id) {
-                      // Navigate to view policy - for now just console log
-                      console.log('View policy:', policy.id);
-                    }
-                  }}
-                  className="relative bg-white border border-[#E5E3DC] rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_16px_rgba(0,0,0,0.04)] overflow-hidden group transition-all duration-200 hover:shadow-[0_4px_6px_rgba(0,0,0,0.05),0_12px_32px_rgba(0,0,0,0.08)] hover:-translate-y-0.5 cursor-pointer"
+                  href={deleteConfirm === policy.id ? '#' : `/dashboard/policy/${policy.id}`}
+                  onClick={(e) => deleteConfirm === policy.id && e.preventDefault()}
+                  className="relative bg-white border border-[#E5E3DC] rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_16px_rgba(0,0,0,0.04)] overflow-hidden group transition-all duration-200 hover:shadow-[0_4px_6px_rgba(0,0,0,0.05),0_12px_32px_rgba(0,0,0,0.08)] hover:-translate-y-0.5 cursor-pointer block"
                 >
                   {/* Score Bar */}
                   <div
@@ -320,6 +316,7 @@ export default function Dashboard() {
                       <div className="flex items-center justify-between border-t border-[#E5E3DC] pt-4 mt-4">
                         <button
                           onClick={(e) => {
+                            e.preventDefault();
                             e.stopPropagation();
                             setDeleteConfirm(policy.id);
                           }}
@@ -327,17 +324,20 @@ export default function Dashboard() {
                         >
                           Delete
                         </button>
-                        <Link
-                          href={`/simulate?id=${policy.id}`}
-                          onClick={(e) => e.stopPropagation()}
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            window.location.href = `/simulate?id=${policy.id}`;
+                          }}
                           className="text-[12px] text-[#1A3FBE] font-medium hover:underline flex items-center gap-1"
                         >
                           Simulate →
-                        </Link>
+                        </button>
                       </div>
                     </div>
                   )}
-                </div>
+                </Link>
               );
             })}
           </div>
