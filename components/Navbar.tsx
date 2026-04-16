@@ -41,9 +41,17 @@ export function Navbar() {
       localStorage.setItem('theme', 'dark');
     }
     
-    // Update local state to reflect the change
+    // Update local state to reflect the change immediately
     const newIsDark = !isDarkNow;
     setIsDark(newIsDark);
+
+    // Dispatch multiple custom events to ensure other components catch it
+    window.dispatchEvent(new CustomEvent('themechange', { detail: { isDark: newIsDark } }));
+    
+    // Also dispatch after a brief delay to ensure DOM is updated
+    setTimeout(() => {
+      window.dispatchEvent(new Event('themechange'));
+    }, 0);
   };
 
   const isActive = (path: string) => pathname === path;

@@ -17,7 +17,7 @@ export function HeroSection() {
       transition={{ duration: 0.6, ease: "easeOut" }}
       className="text-left"
     >
-      <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium mb-4">
+      <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium mb-3">
         <Sparkles className="w-3 h-3" />
         AI-Powered Insurance Analysis
       </div>
@@ -27,12 +27,12 @@ export function HeroSection() {
         <em className="text-gradient not-italic">in 60 seconds</em>
       </h1>
 
-      <p className="mt-4 text-muted-foreground text-sm md:text-base max-w-md leading-relaxed">
+      <p className="mt-3 text-muted-foreground text-sm md:text-base max-w-md leading-relaxed">
         Upload your insurance policy PDF and get instant AI-powered analysis of coverage, exclusions, and risky clauses.
       </p>
 
       {/* Feature list */}
-      <div className="mt-6 space-y-2.5">
+      <div className="mt-4 space-y-2">
         {features.map((feat, i) => (
           <motion.div
             key={feat.title}

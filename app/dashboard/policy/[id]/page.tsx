@@ -152,13 +152,6 @@ function PolicyDetailPage() {
     );
   };
 
-  const getScoreColor = (score: number) => {
-    if (score >= 8) return { bg: '#D1FAE5', text: '#047857', label: 'Excellent' };
-    if (score >= 6) return { bg: '#DBEAFE', text: '#1D4ED8', label: 'Good' };
-    if (score >= 4) return { bg: '#FEF3C7', text: '#B45309', label: 'Fair' };
-    return { bg: '#FEE2E2', text: '#DC2626', label: 'Poor' };
-  };
-
   const formatDate = (dateString: string) => {
     try {
       return new Date(dateString).toLocaleDateString('en-US', {

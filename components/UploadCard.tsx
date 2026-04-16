@@ -72,7 +72,7 @@ export function UploadCard({
       <div className="relative rounded-2xl bg-card border border-border overflow-hidden shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_16px_rgba(0,0,0,0.04)]">
         <div className="h-1 w-full bg-gradient-to-r from-primary via-accent to-primary" />
 
-        <div className="p-5 md:p-6">
+        <div className="p-4 md:p-5">
           {/* Upload zone */}
           <div
             onDragEnter={(e) => handleDrag(e, true)}
@@ -102,7 +102,7 @@ export function UploadCard({
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="flex flex-col items-center py-10"
+                  className="flex flex-col items-center py-7"
                 >
                   <motion.div
                     animate={isDragging ? { scale: 1.15, rotate: -5 } : { scale: 1, rotate: 0 }}
