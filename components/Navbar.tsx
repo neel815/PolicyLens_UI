@@ -4,107 +4,111 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { isAuthenticated, logout, getUser } from '@/lib/auth';
+import { Shield, Sun, Moon } from 'lucide-react';
+
+const navLinks = ["Analyze", "Battle", "Dashboard"];
+const navPaths = ["/", "/battle", "/dashboard"];
 
 export function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
   const [authed, setAuthed] = useState(false);
-  const [userName, setUserName] = useState('');
+  const [isDark, setIsDark] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setAuthed(isAuthenticated());
-    const user = getUser();
-    if (user) setUserName(user.full_name || user.username);
   }, [pathname]);
+
+  useEffect(() => {
+    // Check initial dark mode preference after mount
+    const isDarkMode = document.documentElement.classList.contains('dark');
+    setIsDark(isDarkMode);
+    setMounted(true);
+  }, []);
+
+  const toggleDarkMode = () => {
+    const html = document.documentElement;
+    const isDarkNow = html.classList.contains('dark');
+    
+    if (isDarkNow) {
+      // Switch to light
+      html.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+    } else {
+      // Switch to dark
+      html.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    }
+    
+    // Update local state to reflect the change
+    const newIsDark = !isDarkNow;
+    setIsDark(newIsDark);
+  };
 
   const isActive = (path: string) => pathname === path;
 
   return (
-    <nav className="sticky top-0 z-50 bg-[#F7F6F2]/85 backdrop-blur-md border-b border-[#E5E3DC] h-[60px] px-8 flex items-center justify-between">
-      {/* Left: Brand */}
-      <div className="flex items-center gap-3">
-        <div className="w-8 h-8 bg-[#1A3FBE] rounded-lg flex items-center justify-center">
-          <svg
-            className="w-[18px] h-[18px] text-white"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
-            />
-          </svg>
+    <nav className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-lg">
+      <div className="max-w-6xl mx-auto px-6 flex items-center justify-between h-14">
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
+            <Shield className="w-4 h-4 text-primary-foreground" />
+          </div>
+          <span className="text-lg font-semibold tracking-tight font-sans">
+            PolicyLens
+          </span>
+          <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-primary/10 text-primary uppercase tracking-wider">
+            AI
+          </span>
         </div>
-        <span className="font-[family-name:var(--font-serif)] text-xl text-[#0F1117]">
-          PolicyLens
-        </span>
-        <span className="text-[#1A3FBE] bg-[#EEF2FF] text-[11px] font-medium px-2 py-0.5 rounded-full">
-          AI
-        </span>
-      </div>
 
-      {/* Right: Nav Links */}
-      <div className="flex items-center gap-6">
-        {authed && (
-          <>
-            <Link
-              href="/"
-              className={`text-[13px] font-medium transition-colors ${
-                isActive('/') 
-                  ? 'text-[#0F1117]' 
-                  : 'text-[#6B7280] hover:text-[#0F1117]'
-              }`}
-            >
-              Analyze
-            </Link>
-            <Link
-              href="/battle"
-              className={`text-[13px] font-medium transition-colors ${
-                isActive('/battle') 
-                  ? 'text-[#0F1117]' 
-                  : 'text-[#6B7280] hover:text-[#0F1117]'
-              }`}
-            >
-              Battle
-            </Link>
-            <Link
-              href="/dashboard"
-              className={`text-[13px] font-medium transition-colors ${
-                isActive('/dashboard') 
-                  ? 'text-[#0F1117]' 
-                  : 'text-[#6B7280] hover:text-[#0F1117]'
-              }`}
-            >
-              Dashboard
-            </Link>
-          </>
-        )}
-        {authed ? (
-          <div className="flex items-center gap-4 pl-4 border-l border-[#E5E3DC]">
-            <span className="text-[13px] text-[#6B7280]">
-              Hi, {userName}
-            </span>
+        <div className="flex items-center gap-4">
+          {authed && (
+            <div className="hidden md:flex items-center gap-1">
+              {navLinks.map((link, idx) => (
+                <Link
+                  key={link}
+                  href={navPaths[idx]}
+                  className={`px-3 py-1.5 text-sm transition-colors rounded-md ${
+                    isActive(navPaths[idx])
+                      ? 'text-foreground'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-secondary'
+                  }`}
+                >
+                  {link}
+                </Link>
+              ))}
+            </div>
+          )}
+          <button
+            onClick={toggleDarkMode}
+            className="p-2 rounded-md hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground"
+            aria-label="Toggle dark mode"
+          >
+            {mounted ? (
+              isDark ? (
+                <Sun className="w-4 h-4" />
+              ) : (
+                <Moon className="w-4 h-4" />
+              )
+            ) : (
+              <Moon className="w-4 h-4" />
+            )}
+          </button>
+          {authed && <div className="h-5 w-px bg-border hidden md:block" />}
+          {authed && (
             <button
               onClick={() => {
                 logout();
-                router.push('/login');
+                router.push("/login");
               }}
-              className="text-[13px] text-[#DC2626] hover:text-[#B91C1C] font-medium cursor-pointer transition-colors"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors px-3 py-1.5 rounded-md hover:bg-secondary"
             >
               Logout
             </button>
-          </div>
-        ) : (
-          <Link
-            href="/login"
-            className="text-[13px] text-[#1A3FBE] font-medium"
-          >
-            Login
-          </Link>
-        )}
+          )}
+        </div>
       </div>
     </nav>
   );

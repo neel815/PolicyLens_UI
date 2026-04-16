@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import {
   Instrument_Serif,
   DM_Sans,
@@ -36,8 +37,28 @@ export default function RootLayout({
       className={`${instrumentSerif.variable} ${dmSans.variable}`}
       suppressHydrationWarning
     >
-      <body className="min-h-screen bg-[#F7F6F2] font-[family-name:var(--font-sans)]">
-        <PageLoader />
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                const stored = localStorage.getItem('theme');
+                const isDark = stored === 'dark';
+                const htmlElement = document.documentElement;
+                if (isDark) {
+                  htmlElement.classList.add('dark');
+                } else {
+                  htmlElement.classList.remove('dark');
+                }
+              })();
+            `,
+          }}
+        />
+      </head>
+      <body className="min-h-screen bg-background font-[family-name:var(--font-sans)] transition-colors duration-300">
+        <Suspense fallback={null}>
+          <PageLoader />
+        </Suspense>
         <Navbar />
         {children}
       </body>

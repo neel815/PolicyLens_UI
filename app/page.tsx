@@ -2,7 +2,6 @@
 
 import {
   useState,
-  useRef,
   useEffect,
 } from "react";
 import Link from "next/link";
@@ -10,6 +9,8 @@ import { useRouter } from "next/navigation";
 import { savePolicy } from "@/lib/storage";
 import { getAuthHeader, isAuthenticated } from "@/lib/auth";
 import { SavedPolicy } from "@/types/analysis";
+import { HeroSection } from "@/components/HeroSection";
+import { UploadCard } from "@/components/UploadCard";
 
 // TypeScript Interfaces
 interface AnalysisData {
@@ -33,6 +34,7 @@ export default function Home() {
   const [loadingStep, setLoadingStep] = useState(0);
   const [scoreBarWidth, setScoreBarWidth] = useState(0);
   const [dbPolicyId, setDbPolicyId] = useState<number | null>(null);
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
   // Check auth on mount
   useEffect(() => {
@@ -42,8 +44,17 @@ export default function Home() {
     }
   }, [router]);
 
-
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  // Detect dark mode changes
+  useEffect(() => {
+    setIsDarkMode(document.documentElement.classList.contains('dark'));
+    
+    const observer = new MutationObserver(() => {
+      setIsDarkMode(document.documentElement.classList.contains('dark'));
+    });
+    
+    observer.observe(document.documentElement, { attributes: true });
+    return () => observer.disconnect();
+  }, []);
 
   // Helper function to detect policy type from filename
   function detectPolicyType(filename: string): string {
@@ -55,9 +66,20 @@ export default function Home() {
     return 'Insurance';
   }
 
-  // Functions
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = e.target.files?.[0];
+  // Helper function to format file size in MB (always showing MB as primary unit)
+  function formatFileSize(bytes: number): string {
+    const mb = bytes / (1024 * 1024);
+    
+    if (mb < 0.01) {
+      // For very small files, show more decimal places (e.g., 0.003 MB)
+      return mb.toFixed(3) + " MB";
+    } else {
+      // For larger files, show 2 decimal places (e.g., 0.30 MB, 1.50 MB)
+      return mb.toFixed(2) + " MB";
+    }
+  }
+
+  const handleFileSelect = (selectedFile: File) => {
     if (!selectedFile) return;
 
     if (selectedFile.size > 10 * 1024 * 1024) {
@@ -67,43 +89,7 @@ export default function Home() {
 
     setFile(selectedFile);
     setFileName(selectedFile.name);
-    setFileSize((selectedFile.size / (1024 * 1024)).toFixed(1) + " MB");
-    setError("");
-  };
-
-  const clearFile = () => {
-    setFile(null);
-    setFileName("");
-    setFileSize("");
-    setError("");
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
-  };
-
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    const droppedFile = e.dataTransfer.files[0];
-    if (!droppedFile) return;
-
-    if (droppedFile.size > 10 * 1024 * 1024) {
-      setError("File too large. Max 10MB.");
-      return;
-    }
-
-    setFile(droppedFile);
-    setFileName(droppedFile.name);
-    setFileSize((droppedFile.size / (1024 * 1024)).toFixed(1) + " MB");
-    setError("");
-  };
-
-  const startAnalysis = async () => {
-    if (!file) return;
-    setAppState("loading");
+    setFileSize(formatFileSize(selectedFile.size));
     setError("");
   };
 
@@ -170,9 +156,6 @@ export default function Home() {
     setError("");
     setScoreBarWidth(0);
     setDbPolicyId(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
   };
 
   const getScoreVerdict = (
@@ -233,191 +216,30 @@ export default function Home() {
   }, [appState, file]);
 
   return (
-    <div className="min-h-screen bg-[#F7F6F2] flex flex-col">
+    <div className="h-screen flex flex-col bg-background overflow-y-auto">
       {/* Main Content */}
-      <main className="max-w-[760px] mx-auto px-6 py-14 pb-20 flex-1 w-full">
+      <main className="flex-1 flex items-center justify-center px-6 py-4">
         {/* IDLE STATE */}
         {appState === "idle" && (
-          <>
-            {/* Hero */}
-            <div className="text-center mb-12">
-              <h1 className="font-[family-name:var(--font-serif)] text-[clamp(36px,5vw,52px)] leading-[1.15] tracking-[-1px] text-[#0F1117] mb-3">
-                Understand your policy{" "}
-                <em className="italic text-[#1A3FBE]">in 60 seconds</em>
-              </h1>
+          <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+            {/* Left Column: Hero & Feature List */}
+            <HeroSection />
 
-              <p className="text-base text-[#6B7280] max-w-[460px] mx-auto leading-relaxed">
-                Upload your insurance policy PDF and get instant AI-powered
-                analysis of coverage, exclusions, and risky clauses.
-              </p>
-            </div>
-
-            {/* Upload Card */}
-            <div className="bg-white border border-[#E5E3DC] rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_16px_rgba(0,0,0,0.04)] p-10">
-              {/* Drop Zone */}
-              <div
-                className="border-2 border-dashed border-[#E5E3DC] rounded-xl p-12 text-center cursor-pointer relative transition-all duration-200 hover:border-[#1A3FBE] hover:bg-[#EEF2FF]"
-                onDragOver={handleDragOver}
-                onDrop={handleDrop}
-                onClick={() => fileInputRef.current?.click()}
-              >
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept=".pdf"
-                  className="hidden"
-                  onChange={handleFileSelect}
-                />
-
-                <div className="w-[52px] h-[52px] bg-white border border-[#E5E3DC] rounded-xl mx-auto mb-4 flex items-center justify-center">
-                  <svg
-                    className="w-[24px] h-[24px] text-[#9CA3AF]"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3v-6"
-                    />
-                  </svg>
-                </div>
-
-                <div className="text-[15px] font-medium text-[#0F1117] mb-1.5">
-                  Drop your policy PDF here
-                </div>
-                <div className="text-[13px] text-[#9CA3AF]">
-                  or click to browse ·{" "}
-                  <span className="bg-[#F0EEE8] border border-[#E5E3DC] rounded px-1.5 text-[11px] font-medium text-[#6B7280] mx-0.5">
-                    PDF
-                  </span>
-                  only ·{" "}
-                  <span className="bg-[#F0EEE8] border border-[#E5E3DC] rounded px-1.5 text-[11px] font-medium text-[#6B7280] mx-0.5">
-                    max 10MB
-                  </span>
-                </div>
-              </div>
-
-              {/* File Selected Row */}
-              {fileName && (
-                <div className="flex items-center gap-3 bg-[#F0EEE8] border border-[#E5E3DC] rounded-xl p-3 px-4 mt-4">
-                  <div className="w-9 h-9 bg-[#FEF2F2] rounded-lg flex items-center justify-center flex-shrink-0">
-                    <svg
-                      className="w-[18px] h-[18px] text-[#DC2626]"
-                      fill="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z" />
-                    </svg>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="text-[13px] font-medium text-[#0F1117] truncate">
-                      {fileName}
-                    </div>
-                    <div className="text-xs text-[#9CA3AF]">{fileSize}</div>
-                  </div>
-                  <button
-                    onClick={clearFile}
-                    className="w-7 h-7 rounded-md hover:bg-[#E5E3DC] flex items-center justify-center text-[#9CA3AF] hover:text-[#0F1117] transition-colors"
-                  >
-                    <svg
-                      className="w-[16px] h-[16px]"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M6 18L18 6M6 6l12 12"
-                      />
-                    </svg>
-                  </button>
-                </div>
-              )}
-
-              {/* Error Banner */}
-              {error && (
-                <div className="flex items-center gap-3 bg-[#FEF2F2] border border-red-200 rounded-xl p-3.5 px-4 mt-4 text-[13px] text-[#DC2626]">
-                  <svg
-                    className="w-[16px] h-[16px] flex-shrink-0"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
-                  </svg>
-                  {error}
-                </div>
-              )}
-
-              {/* Divider */}
-              <div className="flex items-center gap-3 my-6 text-[#9CA3AF] text-xs">
-                <div className="flex-1 h-px bg-[#E5E3DC]" />
-              </div>
-
-              {/* Analyze Button */}
-              <button
-                onClick={startAnalysis}
-                disabled={!file}
-                className="w-full bg-[#1A3FBE] text-white rounded-xl py-[15px] px-6 text-[15px] font-medium flex items-center justify-center gap-2 transition-all duration-200 hover:bg-[#1535A8] hover:-translate-y-px hover:shadow-[0_8px_24px_rgba(26,63,190,0.25)] disabled:bg-[#F0EEE8] disabled:text-[#9CA3AF] disabled:cursor-not-allowed disabled:shadow-none disabled:translate-y-0"
-              >
-                <svg
-                  className="w-[18px] h-[18px]"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                  />
-                </svg>
-                Analyze Policy
-              </button>
-
-              {/* Quick Tips */}
-              <div className="grid grid-cols-1 gap-2.5 mt-5">
-                <div className="flex items-start gap-3 bg-[#EEF2FF] border border-[#1A3FBE]/10 rounded-lg p-3 px-3.5">
-                  <div className="w-5 h-5 rounded-full bg-[#1A3FBE] flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <div className="text-xs font-semibold text-[#1A3FBE]">Coverage limits matter</div>
-                    <div className="text-xs text-[#6B7280] mt-0.5">Check the maximum amount your policy will pay for claims</div>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-3 bg-[#FEF2F2] border border-[#DC2626]/10 rounded-lg p-3 px-3.5">
-                  <div className="w-5 h-5 rounded-full bg-[#DC2626] flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <span className="text-white text-xs font-bold">!</span>
-                  </div>
-                  <div>
-                    <div className="text-xs font-semibold text-[#DC2626]">Review exclusions carefully</div>
-                    <div className="text-xs text-[#6B7280] mt-0.5">These are things NOT covered—they can surprise you during claims</div>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-3 bg-[#FFFBEB] border border-[#D97706]/10 rounded-lg p-3 px-3.5">
-                  <div className="w-5 h-5 rounded-full bg-[#D97706] flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <div className="text-xs font-semibold text-[#D97706]">Compare policies side-by-side</div>
-                    <div className="text-xs text-[#6B7280] mt-0.5">Analyze multiple policies to find the best coverage for your needs</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </>
+            {/* Right Column: Upload Card */}
+            <UploadCard
+              onFileSelect={handleFileSelect}
+              onAnalyze={() => {
+                if (!file) return;
+                setAppState("loading");
+                setError("");
+              }}
+              fileName={fileName}
+              fileSize={fileSize}
+              file={file}
+              isLoading={false}
+              error={error}
+            />
+          </div>
         )}
 
         {/* LOADING STATE */}
@@ -470,83 +292,66 @@ export default function Home() {
 
         {/* RESULTS STATE */}
         {appState === "results" && result && (
-          <>
-            {/* Score Card */}
-            <div className="bg-white border border-[#E5E3DC] rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_16px_rgba(0,0,0,0.04)] p-8 px-10 mb-4 flex items-center justify-between gap-6 flex-wrap">
-              <div>
-                <div className="text-[11px] font-medium uppercase tracking-[0.8px] text-[#9CA3AF] mb-1.5">
-                  Overall Coverage Score
-                </div>
-                <div className="font-[family-name:var(--font-serif)] text-[56px] leading-none tracking-[-2px] text-[#0F1117] mb-3">
-                  {result.coverage_score}
-                  <span className="text-[28px] text-[#9CA3AF]">/10</span>
-                </div>
-                <div className="bg-[#F0EEE8] rounded-lg h-2 max-w-[280px] overflow-hidden">
-                  <div
-                    className="h-full bg-[#1A3FBE] rounded-lg transition-all duration-[1200ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
-                    style={{ width: `${scoreBarWidth}%` }}
-                  />
-                </div>
-              </div>
+          <div className="max-w-[960px] mx-auto w-full space-y-6">
+            <div>
+              <h2 className="text-3xl font-[family-name:var(--font-serif)] tracking-[-0.8px] text-foreground mb-1">Analysis Complete</h2>
+              <p className="text-[13px] text-muted-foreground">Review your policy coverage details below</p>
+            </div>
 
-              <div>
+            {/* Coverage Score Card */}
+            <div className="bg-card border border-border rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_16px_rgba(0,0,0,0.04)] dark:shadow-[0_1px_3px_rgba(0,0,0,0.3),0_4px_16px_rgba(0,0,0,0.2)] p-8">
+              <div className="text-[11px] text-muted-foreground uppercase tracking-wide font-medium mb-4">
+                Overall Coverage Score
+              </div>
+              <div className="font-[family-name:var(--font-serif)] text-[56px] leading-none tracking-[-2px] text-foreground mb-4">
+                {result.coverage_score}
+                <span className="text-[28px] text-muted-foreground">/10</span>
+              </div>
+              <div className="bg-secondary rounded-lg h-2.5 overflow-hidden mb-5">
                 <div
-                  className="text-[13px] font-medium px-3.5 py-1.5 rounded-full text-center"
-                  style={{
-                    color: getScoreVerdict(result.coverage_score).textColor,
-                    background: getScoreVerdict(result.coverage_score).bgColor,
-                  }}
-                >
-                  {getScoreVerdict(result.coverage_score).label}
-                </div>
-                <div className="text-xs text-[#6B7280] text-right max-w-[180px] mt-2">
-                  Your policy offers{" "}
-                  {result.coverage_score >= 8
-                    ? "comprehensive"
-                    : result.coverage_score >= 6
-                      ? "good"
-                      : result.coverage_score >= 4
-                        ? "moderate"
-                        : "limited"}{" "}
-                  protection
-                </div>
+                  className="h-full bg-primary rounded-lg transition-all duration-[1200ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
+                  style={{ width: `${scoreBarWidth}%` }}
+                />
+              </div>
+              <div className="text-[13px] text-muted-foreground leading-relaxed">
+                Your policy offers{" "}
+                {result.coverage_score >= 8
+                  ? "comprehensive"
+                  : result.coverage_score >= 6
+                    ? "good"
+                    : result.coverage_score >= 4
+                      ? "moderate"
+                      : "limited"}{" "}
+                protection
               </div>
             </div>
 
             {/* Results Grid */}
-            <div className="grid grid-cols-2 gap-4 mb-4 max-sm:grid-cols-1">
+            <div className="grid grid-cols-2 gap-4 max-sm:grid-cols-1">
               {/* Covered Events */}
-              <div className="bg-white border border-[#E5E3DC] rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_16px_rgba(0,0,0,0.04)] overflow-hidden">
-                <div className="p-4 px-5 border-b border-[#E5E3DC] flex items-center gap-2.5">
-                  <div className="w-8 h-8 bg-[#ECFDF5] rounded-lg flex items-center justify-center flex-shrink-0">
-                    <svg
-                      className="w-[16px] h-[16px] text-[#059669]"
-                      fill="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
-                    </svg>
-                  </div>
-                  <span className="text-sm font-medium text-[#0F1117]">
+              <div className="bg-card border border-border rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_16px_rgba(0,0,0,0.04)] dark:shadow-[0_1px_3px_rgba(0,0,0,0.3),0_4px_16px_rgba(0,0,0,0.2)] overflow-hidden">
+                <div className="p-4 px-5 border-b border-border flex items-center gap-2.5 bg-green-700 dark:bg-green-900">
+                  <span className="text-lg font-bold text-white">+</span>
+                  <span className="text-sm font-semibold text-white">
                     Covered Events
                   </span>
-                  <span className="ml-auto bg-[#ECFDF5] text-[#059669] text-[11px] font-semibold px-2 py-0.5 rounded-full">
+                  <span className="ml-auto text-[11px] font-medium bg-white/20 px-2 py-1 rounded-full text-white">
                     {result.covered_events.length}
                   </span>
                 </div>
-                <div className="p-3 flex flex-col gap-1.5">
+                <div className="p-4 space-y-2">
                   {result.covered_events.length > 0 ? (
                     result.covered_events.map((item, idx) => (
                       <div
                         key={idx}
-                        className="flex items-start gap-2.5 p-2.5 px-3 rounded-lg bg-[#F0FDF9] text-[13px] text-[#0F1117] leading-relaxed"
+                        className="flex items-start gap-2.5 border-l-4 border-green-500 pl-3 py-2 text-[13px] text-foreground"
                       >
-                        <div className="w-1.5 h-1.5 rounded-full bg-[#059669] mt-[7px] flex-shrink-0" />
+                        <span className="flex-shrink-0">•</span>
                         <span>{item}</span>
                       </div>
                     ))
                   ) : (
-                    <p className="p-6 text-center text-[13px] text-[#9CA3AF]">
+                    <p className="text-center text-[13px] text-muted-foreground py-4">
                       None identified
                     </p>
                   )}
@@ -554,165 +359,95 @@ export default function Home() {
               </div>
 
               {/* Exclusions */}
-              <div className="bg-white border border-[#E5E3DC] rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_16px_rgba(0,0,0,0.04)] overflow-hidden">
-                <div className="p-4 px-5 border-b border-[#E5E3DC] flex items-center gap-2.5">
-                  <div className="w-8 h-8 bg-[#FEF2F2] rounded-lg flex items-center justify-center flex-shrink-0">
-                    <svg
-                      className="w-[16px] h-[16px] text-[#DC2626]"
-                      fill="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
-                    </svg>
-                  </div>
-                  <span className="text-sm font-medium text-[#0F1117]">
+              <div className="bg-card border border-border rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_16px_rgba(0,0,0,0.04)] dark:shadow-[0_1px_3px_rgba(0,0,0,0.3),0_4px_16px_rgba(0,0,0,0.2)] overflow-hidden">
+                <div className="p-4 px-5 border-b border-border flex items-center gap-2.5 bg-red-700 dark:bg-red-900">
+                  <span className="text-lg font-bold text-white">−</span>
+                  <span className="text-sm font-semibold text-white">
                     Exclusions
                   </span>
-                  <span className="ml-auto bg-[#FEF2F2] text-[#DC2626] text-[11px] font-semibold px-2 py-0.5 rounded-full">
+                  <span className="ml-auto text-[11px] font-medium bg-white/20 px-2 py-1 rounded-full text-white">
                     {result.exclusions.length}
                   </span>
                 </div>
-                <div className="p-3 flex flex-col gap-1.5">
+                <div className="p-4 space-y-2">
                   {result.exclusions.length > 0 ? (
                     result.exclusions.map((item, idx) => (
                       <div
                         key={idx}
-                        className="flex items-start gap-2.5 p-2.5 px-3 rounded-lg bg-[#FFF5F5] text-[13px] text-[#0F1117] leading-relaxed"
+                        className="flex items-start gap-2.5 border-l-4 border-red-500 pl-3 py-2 text-[13px] text-foreground"
                       >
-                        <div className="w-1.5 h-1.5 rounded-full bg-[#DC2626] mt-[7px] flex-shrink-0" />
+                        <span className="flex-shrink-0">•</span>
                         <span>{item}</span>
                       </div>
                     ))
                   ) : (
-                    <p className="p-6 text-center text-[13px] text-[#9CA3AF]">
-                      None identified
-                    </p>
-                  )}
-                </div>
-              </div>
-
-              {/* Risky Clauses - Full Width */}
-              <div className="col-span-2 max-sm:col-span-1 bg-white border border-[#E5E3DC] rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_16px_rgba(0,0,0,0.04)] overflow-hidden">
-                <div className="p-4 px-5 border-b border-[#E5E3DC] flex items-center gap-2.5">
-                  <div className="w-8 h-8 bg-[#FFFBEB] rounded-lg flex items-center justify-center flex-shrink-0">
-                    <svg
-                      className="w-[16px] h-[16px] text-[#D97706]"
-                      fill="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z" />
-                    </svg>
-                  </div>
-                  <span className="text-sm font-medium text-[#0F1117]">
-                    Risky Clauses
-                  </span>
-                  <span className="ml-auto bg-[#FFFBEB] text-[#D97706] text-[11px] font-semibold px-2 py-0.5 rounded-full">
-                    {result.risky_clauses.length}
-                  </span>
-                </div>
-                <div className="p-3">
-                  {result.risky_clauses.length > 0 ? (
-                    <div className="grid grid-cols-2 gap-1.5 max-sm:grid-cols-1">
-                      {result.risky_clauses.map((item, idx) => (
-                        <div
-                          key={idx}
-                          className="flex items-start gap-2.5 p-2.5 px-3 rounded-lg bg-[#FFFDF0] text-[13px] text-[#0F1117] leading-relaxed"
-                        >
-                          <div className="w-1.5 h-1.5 rounded-full bg-[#D97706] mt-[7px] flex-shrink-0" />
-                          <span>{item}</span>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="p-6 text-center text-[13px] text-[#9CA3AF]">
-                      None identified
+                    <p className="text-center text-[13px] text-muted-foreground py-4">
+                      None found
                     </p>
                   )}
                 </div>
               </div>
             </div>
 
-            {/* Analyze Again Card */}
-            <div className="bg-white border border-[#E5E3DC] rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_16px_rgba(0,0,0,0.04)] p-6 px-8 flex items-center justify-between gap-4 flex-wrap">
-              <div>
-                <p>
-                  <strong className="font-medium text-[#0F1117]">
-                    Want to check another policy?
-                  </strong>
-                </p>
-                <p className="text-sm text-[#6B7280] mt-0.5">
-                  Upload a second PDF to compare coverage.
-                </p>
+            {/* Risky Clauses - Full Width */}
+            <div className="bg-card border border-border rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_16px_rgba(0,0,0,0.04)] dark:shadow-[0_1px_3px_rgba(0,0,0,0.3),0_4px_16px_rgba(0,0,0,0.2)] overflow-hidden">
+              <div className="p-4 px-5 border-b border-border flex items-center gap-2.5 bg-amber-800 dark:bg-amber-900">
+                <span className="text-lg font-bold text-white">!</span>
+                <span className="text-sm font-semibold text-white">
+                  Risky Clauses
+                </span>
+                <span className="ml-auto text-[11px] font-medium bg-white/20 px-2 py-1 rounded-full text-white">
+                  {result.risky_clauses.length}
+                </span>
               </div>
+              <div className="p-4 space-y-2">
+                {result.risky_clauses.length > 0 ? (
+                  result.risky_clauses.map((item, idx) => (
+                    <div
+                      key={idx}
+                      className="flex items-start gap-2.5 border-l-4 border-amber-500 pl-3 py-2 text-[13px] text-foreground"
+                    >
+                      <span className="flex-shrink-0">•</span>
+                      <span>{item}</span>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-center text-[13px] text-muted-foreground py-4">
+                    No risky clauses detected
+                  </p>
+                )}
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex items-center gap-3 flex-wrap">
               <button
                 onClick={resetToIdle}
-                className="bg-[#F0EEE8] border border-[#E5E3DC] rounded-xl px-5 py-2.5 text-sm font-medium text-[#0F1117] flex items-center gap-1.5 hover:bg-[#E5E3DC] transition-colors whitespace-nowrap"
+                className="px-5 py-2.5 text-[13px] font-medium text-primary border border-border rounded-lg hover:bg-secondary transition-colors"
               >
-                <svg
-                  className="w-[16px] h-[16px]"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                  />
+                Analyze Another
+              </button>
+              <button
+                onClick={() => router.push("/simulate?id=" + dbPolicyId)}
+                disabled={!dbPolicyId}
+                style={{
+                  backgroundColor: isDarkMode ? '#ffffff' : '#000000',
+                  color: isDarkMode ? '#000000' : '#ffffff'
+                }}
+                className="px-5 py-2.5 text-[13px] font-medium rounded-lg hover:opacity-90 disabled:opacity-50 transition-colors flex items-center gap-2"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
-                Analyze another
+                Simulate Claim
               </button>
             </div>
-
-            {/* View Dashboard Link and Simulate Claim Button */}
-            <div className="mt-4 flex flex-col gap-2 items-center">
-              <Link
-                href={dbPolicyId ? `/simulate?id=${dbPolicyId}` : '/simulate'}
-                className="w-full flex items-center justify-center gap-2 bg-[#F0EEE8] border border-[#E5E3DC] text-[#0F1117] rounded-xl py-[15px] px-6 text-[15px] font-medium hover:bg-[#E5E3DC] transition-colors"
-              >
-                <svg
-                  className="w-[18px] h-[18px]"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M13 10V3L4 14h7v7l9-11h-7z"
-                  />
-                </svg>
-                Simulate a Claim
-              </Link>
-              <Link
-                href="/dashboard"
-                className="inline-flex items-center gap-2 text-[13px] text-[#1A3FBE] hover:underline font-medium"
-              >
-                <svg 
-                  width="14" 
-                  height="14" 
-                  viewBox="0 0 24 24" 
-                  fill="none"
-                  stroke="currentColor" 
-                  strokeWidth="2" 
-                  strokeLinecap="round"
-                >
-                  <rect x="3" y="3" width="7" height="7"/>
-                  <rect x="14" y="3" width="7" height="7"/>
-                  <rect x="3" y="14" width="7" height="7"/>
-                  <rect x="14" y="14" width="7" height="7"/>
-                </svg>
-                View all saved policies
-              </Link>
-            </div>
-          </>
+          </div>
         )}
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-[#E5E3DC] text-center py-6 text-xs text-[#9CA3AF]">
+      <footer className="border-t border-border text-center py-6 text-xs text-muted-foreground">
         PolicyLens v1.0.0 · AI-Powered Insurance Policy Analysis · Built with
         FastAPI + Next.js
       </footer>

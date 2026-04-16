@@ -20,22 +20,28 @@ export default function ResultSection({
   headerBgColor,
 }: ResultSectionProps) {
   return (
-    <div className="bg-white rounded-2xl shadow-sm p-6">
-      <div className={`flex items-center gap-3 mb-6 ${headerBgColor} p-3 rounded-xl`}>
-        <span className="text-xl">{icon}</span>
-        <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
+    <div className="bg-card border border-border rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_16px_rgba(0,0,0,0.04)] dark:shadow-[0_1px_3px_rgba(0,0,0,0.3),0_4px_16px_rgba(0,0,0,0.2)] overflow-hidden">
+      <div className={`flex items-center gap-3 ${headerBgColor} border-b border-border p-4 px-5`}>
+        <span className="text-lg flex-shrink-0">{icon}</span>
+        <h3 className="text-sm font-semibold text-white">{title}</h3>
+        {items.length > 0 && (
+          <span className="ml-auto text-[11px] font-medium text-white bg-white/20 rounded-full px-2 py-1">
+            {items.length}
+          </span>
+        )}
       </div>
 
       {items.length === 0 ? (
-        <p className="text-center text-gray-500 py-8">{emptyMessage}</p>
+        <p className="text-center text-muted-foreground py-8 text-sm">{emptyMessage}</p>
       ) : (
-        <div className="space-y-3">
+        <div className="p-4 space-y-2">
           {items.map((item, index) => (
             <div
               key={index}
-              className={`border-l-4 ${borderColor} pl-4 py-2 bg-gray-50 rounded px-4`}
+              className={`flex items-start gap-3 ${borderColor} border-l-4 pl-3 py-2 text-[13px] text-foreground`}
             >
-              <p className="text-gray-700">{item}</p>
+              <span className="flex-shrink-0">•</span>
+              <p>{item}</p>
             </div>
           ))}
         </div>

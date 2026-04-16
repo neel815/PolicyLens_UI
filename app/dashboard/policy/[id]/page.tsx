@@ -234,6 +234,13 @@ function PolicyDetailPage() {
     );
   }
 
+  const getScoreColor = (score: number): { text: string; bg: string; label: string } => {
+    if (score >= 8) return { text: '#ffffff', bg: '#059669', label: 'Excellent' };
+    if (score >= 6) return { text: '#ffffff', bg: '#1A3FBE', label: 'Good' };
+    if (score >= 4) return { text: '#ffffff', bg: '#D97706', label: 'Fair' };
+    return { text: '#ffffff', bg: '#DC2626', label: 'Poor' };
+  };
+
   const scoreColor = getScoreColor(policy.coverage_score);
 
   return (

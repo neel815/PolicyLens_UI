@@ -71,10 +71,10 @@ export default function Dashboard() {
   };
 
   const getScoreColor = (score: number): { text: string; bg: string } => {
-    if (score >= 8) return { text: '#059669', bg: '#ECFDF5' };
-    if (score >= 6) return { text: '#1A3FBE', bg: '#EEF2FF' };
-    if (score >= 4) return { text: '#D97706', bg: '#FFFBEB' };
-    return { text: '#DC2626', bg: '#FEF2F2' };
+    if (score >= 8) return { text: '#ffffff', bg: '#059669' };
+    if (score >= 6) return { text: '#ffffff', bg: '#1A3FBE' };
+    if (score >= 4) return { text: '#ffffff', bg: '#D97706' };
+    return { text: '#ffffff', bg: '#DC2626' };
   };
 
   const getScoreBarColor = (score: number): string => {
@@ -120,15 +120,15 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F7F6F2] font-[family-name:var(--font-sans)]">
+    <div className="min-h-screen bg-background font-[family-name:var(--font-sans)]">
       {/* Header */}
       <div className="max-w-[960px] mx-auto px-6 pt-12 pb-6">
         <div className="flex items-end justify-between gap-4 flex-wrap">
           <div>
-            <h1 className="font-[family-name:var(--font-serif)] text-[36px] tracking-[-0.8px] text-[#0F1117]">
+            <h1 className="font-[family-name:var(--font-serif)] text-[36px] tracking-[-0.8px] text-foreground">
               Your policies
             </h1>
-            <p className="text-[15px] text-[#6B7280] mt-1">
+            <p className="text-[15px] text-muted-foreground mt-1">
               {policies.length > 0
                 ? `${policies.length} saved · click any card to view`
                 : 'No analyses saved yet'}
@@ -140,14 +140,14 @@ export default function Dashboard() {
       {/* Clear All Confirmation Banner - REMOVED */}
       {showClearConfirm && (
         <div className="max-w-[960px] mx-auto px-6 mb-4">
-          <div className="bg-[#FEF2F2] border border-red-200 rounded-xl p-4 flex items-center justify-between gap-4">
-            <span className="text-[13px] text-[#DC2626]">
+          <div className="bg-red-100 dark:bg-red-950 border border-red-300 dark:border-red-800 rounded-xl p-4 flex items-center justify-between gap-4">
+            <span className="text-[13px] text-red-700 dark:text-red-300">
               Remove all {policies.length} saved analyses? This cannot be undone.
             </span>
             <div className="flex items-center gap-2 flex-shrink-0">
               <button
                 onClick={() => setShowClearConfirm(false)}
-                className="text-[13px] text-[#6B7280] px-4 py-2 rounded-lg hover:bg-[#F0EEE8] transition-colors"
+                className="text-[13px] text-muted-foreground px-4 py-2 rounded-lg hover:bg-secondary transition-colors"
               >
                 Cancel
               </button>
@@ -161,43 +161,43 @@ export default function Dashboard() {
         <div className="max-w-[960px] mx-auto px-6 mb-8">
           <div className="grid grid-cols-3 gap-4">
             {/* Total Analyzed */}
-            <div className="bg-white border border-[#E5E3DC] rounded-xl p-4 flex items-center gap-3 shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_16px_rgba(0,0,0,0.04)]">
-              <div className="w-9 h-9 bg-[#EEF2FF] rounded-lg flex items-center justify-center flex-shrink-0">
-                <svg className="w-[18px] h-[18px] text-[#1A3FBE]" fill="currentColor" viewBox="0 0 24 24">
+            <div className="bg-card border border-border rounded-xl p-4 flex items-center gap-3 shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_16px_rgba(0,0,0,0.04)] dark:shadow-[0_1px_3px_rgba(0,0,0,0.3),0_4px_16px_rgba(0,0,0,0.2)]">
+              <div className="w-9 h-9 bg-blue-100 dark:bg-blue-950 rounded-lg flex items-center justify-center flex-shrink-0">
+                <svg className="w-[18px] h-[18px] text-blue-700 dark:text-blue-300" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-13c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5z" />
                 </svg>
               </div>
               <div>
-                <div className="text-[11px] text-[#9CA3AF] uppercase tracking-wide mb-0.5">Total analyzed</div>
-                <div className="text-[18px] font-medium text-[#0F1117]">{policies.length}</div>
+                <div className="text-[11px] text-muted-foreground uppercase tracking-wide mb-0.5">Total analyzed</div>
+                <div className="text-[18px] font-medium text-foreground">{policies.length}</div>
               </div>
             </div>
 
             {/* Avg Coverage Score */}
-            <div className="bg-white border border-[#E5E3DC] rounded-xl p-4 flex items-center gap-3 shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_16px_rgba(0,0,0,0.04)]">
-              <div className="w-9 h-9 bg-[#EEF2FF] rounded-lg flex items-center justify-center flex-shrink-0">
-                <svg className="w-[18px] h-[18px] text-[#1A3FBE]" fill="currentColor" viewBox="0 0 24 24">
+            <div className="bg-card border border-border rounded-xl p-4 flex items-center gap-3 shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_16px_rgba(0,0,0,0.04)] dark:shadow-[0_1px_3px_rgba(0,0,0,0.3),0_4px_16px_rgba(0,0,0,0.2)]">
+              <div className="w-9 h-9 bg-blue-100 dark:bg-blue-950 rounded-lg flex items-center justify-center flex-shrink-0">
+                <svg className="w-[18px] h-[18px] text-blue-700 dark:text-blue-300" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27z" />
                 </svg>
               </div>
               <div>
-                <div className="text-[11px] text-[#9CA3AF] uppercase tracking-wide mb-0.5">Avg coverage score</div>
-                <div className="text-[18px] font-medium text-[#0F1117]">
+                <div className="text-[11px] text-muted-foreground uppercase tracking-wide mb-0.5">Avg coverage score</div>
+                <div className="text-[18px] font-medium text-foreground">
                   {(policies.reduce((sum, p) => sum + p.coverage_score, 0) / policies.length).toFixed(1)}/10
                 </div>
               </div>
             </div>
 
             {/* Latest Analysis */}
-            <div className="bg-white border border-[#E5E3DC] rounded-xl p-4 flex items-center gap-3 shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_16px_rgba(0,0,0,0.04)]">
-              <div className="w-9 h-9 bg-[#EEF2FF] rounded-lg flex items-center justify-center flex-shrink-0">
-                <svg className="w-[18px] h-[18px] text-[#1A3FBE]" fill="currentColor" viewBox="0 0 24 24">
+            <div className="bg-card border border-border rounded-xl p-4 flex items-center gap-3 shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_16px_rgba(0,0,0,0.04)] dark:shadow-[0_1px_3px_rgba(0,0,0,0.3),0_4px_16px_rgba(0,0,0,0.2)]">
+              <div className="w-9 h-9 bg-blue-100 dark:bg-blue-950 rounded-lg flex items-center justify-center flex-shrink-0">
+                <svg className="w-[18px] h-[18px] text-blue-700 dark:text-blue-300" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z" />
                 </svg>
               </div>
               <div>
-                <div className="text-[11px] text-[#9CA3AF] uppercase tracking-wide mb-0.5">Latest analysis</div>
-                <div className="text-[18px] font-medium text-[#0F1117] truncate">{formatDate(policies[0]?.created_at || '')}</div>
+                <div className="text-[11px] text-muted-foreground uppercase tracking-wide mb-0.5">Latest analysis</div>
+                <div className="text-[18px] font-medium text-foreground truncate">{formatDate(policies[0]?.created_at || '')}</div>
               </div>
             </div>
           </div>
@@ -208,8 +208,8 @@ export default function Dashboard() {
       {loading && (
         <div className="flex items-center justify-center py-24 max-w-[960px] mx-auto px-6">
           <div className="flex flex-col items-center gap-4">
-            <div className="w-8 h-8 rounded-full border-2 border-[#E5E3DC] border-t-[#1A3FBE] animate-spin"/>
-            <p className="text-[14px] text-[#6B7280]">Loading policies...</p>
+            <div className="w-8 h-8 rounded-full border-2 border-border border-t-blue-700 dark:border-t-blue-300 animate-spin"/>
+            <p className="text-[14px] text-muted-foreground">Loading policies...</p>
           </div>
         </div>
       )}
@@ -217,20 +217,20 @@ export default function Dashboard() {
       {!loading && policies.length === 0 ? (
         // Empty State
         <div className="flex flex-col items-center justify-center py-24 text-center max-w-[960px] mx-auto px-6">
-          <div className="w-16 h-16 bg-[#F0EEE8] rounded-2xl flex items-center justify-center mx-auto mb-5">
-            <svg className="w-[28px] h-[28px] text-[#9CA3AF]" fill="currentColor" viewBox="0 0 24 24">
+          <div className="w-16 h-16 bg-secondary rounded-2xl flex items-center justify-center mx-auto mb-5">
+            <svg className="w-[28px] h-[28px] text-muted-foreground" fill="currentColor" viewBox="0 0 24 24">
               <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z" />
             </svg>
           </div>
-          <h2 className="font-[family-name:var(--font-serif)] text-[24px] text-[#0F1117] tracking-[-0.5px] mb-2">
+          <h2 className="font-[family-name:var(--font-serif)] text-[24px] text-foreground tracking-[-0.5px] mb-2">
             No policies analyzed yet
           </h2>
-          <p className="text-[14px] text-[#6B7280] mb-6 max-w-[280px]">
+          <p className="text-[14px] text-muted-foreground mb-6 max-w-[280px]">
             Upload an insurance PDF on the home page to see your analysis here.
           </p>
           <Link
             href="/"
-            className="inline-flex items-center gap-2 bg-[#1A3FBE] text-white text-[14px] font-medium px-5 py-2.5 rounded-xl hover:bg-[#1535A8] transition-colors"
+            className="inline-flex items-center gap-2 bg-primary text-primary-foreground text-[14px] font-medium px-5 py-2.5 rounded-xl hover:opacity-90 transition-colors"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3v-6" />
@@ -251,7 +251,7 @@ export default function Dashboard() {
                   key={policy.id}
                   href={deleteConfirm === policy.id ? '#' : `/dashboard/policy/${policy.id}`}
                   onClick={(e) => deleteConfirm === policy.id && e.preventDefault()}
-                  className="relative bg-white border border-[#E5E3DC] rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_16px_rgba(0,0,0,0.04)] overflow-hidden group transition-all duration-200 hover:shadow-[0_4px_6px_rgba(0,0,0,0.05),0_12px_32px_rgba(0,0,0,0.08)] hover:-translate-y-0.5 cursor-pointer block"
+                  className="relative bg-card border border-border rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_16px_rgba(0,0,0,0.04)] dark:shadow-[0_1px_3px_rgba(0,0,0,0.3),0_4px_16px_rgba(0,0,0,0.2)] overflow-hidden group transition-all duration-200 hover:shadow-[0_4px_6px_rgba(0,0,0,0.05),0_12px_32px_rgba(0,0,0,0.08)] dark:hover:shadow-[0_4px_6px_rgba(0,0,0,0.3),0_12px_32px_rgba(0,0,0,0.2)] hover:-translate-y-0.5 cursor-pointer block"
                 >
                   {/* Score Bar */}
                   <div
@@ -261,14 +261,14 @@ export default function Dashboard() {
 
                   {deleteConfirm === policy.id ? (
                     // Delete Confirmation
-                    <div className="bg-[#FEF2F2] border-t border-red-100 p-3 flex items-center gap-2">
-                      <span className="text-[12px] text-[#DC2626] flex-1">Delete this analysis?</span>
+                    <div className="bg-red-100 dark:bg-red-950 border-t border-red-300 dark:border-red-800 p-3 flex items-center gap-2">
+                      <span className="text-[12px] text-red-700 dark:text-red-300 flex-1">Delete this analysis?</span>
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           handleDelete(policy.id);
                         }}
-                        className="text-[12px] font-medium text-white bg-[#DC2626] px-3 py-1 rounded-lg hover:bg-[#B91C1C] transition-colors"
+                        className="text-[12px] font-medium text-white bg-red-700 dark:bg-red-600 px-3 py-1 rounded-lg hover:bg-red-800 dark:hover:bg-red-700 transition-colors"
                       >
                         Delete
                       </button>
@@ -277,7 +277,7 @@ export default function Dashboard() {
                           e.stopPropagation();
                           setDeleteConfirm(null);
                         }}
-                        className="text-[12px] text-[#6B7280] px-3 py-1 rounded-lg hover:bg-[#F0EEE8] transition-colors"
+                        className="text-[12px] text-muted-foreground px-3 py-1 rounded-lg hover:bg-secondary transition-colors"
                       >
                         Cancel
                       </button>
@@ -288,12 +288,12 @@ export default function Dashboard() {
                       {/* Row 1: Icon + Type + Score */}
                       <div className="flex items-start justify-between mb-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-[#F0EEE8] rounded-xl flex items-center justify-center text-[#6B7280]">
+                          <div className="w-10 h-10 bg-secondary rounded-xl flex items-center justify-center text-muted-foreground">
                             {getPolicyIcon(policy.policy_type)}
                           </div>
                           <div>
-                            <div className="text-[13px] font-medium text-[#0F1117]">{policy.policy_type} Insurance</div>
-                            <div className="text-[11px] text-[#9CA3AF] mt-0.5">{formatDate(policy.created_at)}</div>
+                            <div className="text-[13px] font-medium text-foreground">{policy.policy_type} Insurance</div>
+                            <div className="text-[11px] text-muted-foreground mt-0.5">{formatDate(policy.created_at)}</div>
                           </div>
                         </div>
                         <div
@@ -305,7 +305,7 @@ export default function Dashboard() {
                       </div>
 
                       {/* Row 2: File name */}
-                      <div className="text-[12px] text-[#9CA3AF] mb-4 truncate flex items-center gap-1.5">
+                      <div className="text-[12px] text-muted-foreground mb-4 truncate flex items-center gap-1.5">
                         <svg className="w-3 h-3 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
                           <path d="M19 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 16H5V4h14v14z" />
                         </svg>
@@ -313,14 +313,14 @@ export default function Dashboard() {
                       </div>
 
                       {/* Row 3: Mini Footer */}
-                      <div className="flex items-center justify-between border-t border-[#E5E3DC] pt-4 mt-4">
+                      <div className="flex items-center justify-between border-t border-border pt-4 mt-4">
                         <button
                           onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
                             setDeleteConfirm(policy.id);
                           }}
-                          className="text-[12px] text-[#9CA3AF] hover:text-[#DC2626] transition-colors"
+                          className="text-[12px] text-muted-foreground hover:text-red-700 dark:hover:text-red-300 transition-colors"
                         >
                           Delete
                         </button>
@@ -330,7 +330,7 @@ export default function Dashboard() {
                             e.stopPropagation();
                             window.location.href = `/simulate?id=${policy.id}`;
                           }}
-                          className="text-[12px] text-[#1A3FBE] font-medium hover:underline flex items-center gap-1"
+                          className="text-[12px] text-primary font-medium hover:underline flex items-center gap-1"
                         >
                           Simulate →
                         </button>
@@ -345,7 +345,7 @@ export default function Dashboard() {
       )}
 
       {/* Footer */}
-      <footer className="border-t border-[#E5E3DC] text-center py-6 text-xs text-[#9CA3AF]">
+      <footer className="border-t border-border text-center py-6 text-xs text-muted-foreground">
         PolicyLens v1.0.0 · AI-Powered Insurance Policy Analysis · Built with FastAPI + Next.js
       </footer>
     </div>

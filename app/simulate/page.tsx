@@ -6,6 +6,8 @@ import Link from 'next/link';
 import { apiFetch, isAuthenticated } from '@/lib/auth';
 import { SimulateResult } from '@/types/analysis';
 
+export const dynamic = 'force-dynamic';
+
 interface SimulatePolicy {
   id: number
   file_name: string
@@ -27,10 +29,23 @@ export default function SimulatePage() {
   const [policies, setPolicies] = useState<SimulatePolicy[]>([]);
   const [selectedPolicy, setSelectedPolicy] = useState<SimulatePolicy | null>(null);
   const [loadingPolicies, setLoadingPolicies] = useState(true);
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  // Check auth on mount
+  // Detect dark mode
+  useEffect(() => {
+    const isDark = document.documentElement.classList.contains('dark');
+    setIsDarkMode(isDark);
+
+    const observer = new MutationObserver(() => {
+      const isDark = document.documentElement.classList.contains('dark');
+      setIsDarkMode(isDark);
+    });
+
+    observer.observe(document.documentElement, { attributes: true });
+    return () => observer.disconnect();
+  }, []);
   useEffect(() => {
     if (!isAuthenticated()) {
       router.push("/login");
@@ -142,15 +157,15 @@ export default function SimulatePage() {
   ): { text: string; bg: string } => {
     switch (verdict) {
       case 'Likely Approved':
-        return { text: '#059669', bg: '#ECFDF5' };
+        return { text: '#ffffff', bg: '#059669' };
       case 'Likely Rejected':
-        return { text: '#DC2626', bg: '#FEF2F2' };
+        return { text: '#ffffff', bg: '#DC2626' };
       case 'Partial Coverage':
-        return { text: '#D97706', bg: '#FFFBEB' };
+        return { text: '#ffffff', bg: '#D97706' };
       case 'Unclear':
-        return { text: '#6B7280', bg: '#F3F4F6' };
+        return { text: '#ffffff', bg: '#6B7280' };
       default:
-        return { text: '#6B7280', bg: '#F3F4F6' };
+        return { text: '#ffffff', bg: '#6B7280' };
     }
   };
 
@@ -163,70 +178,70 @@ export default function SimulatePage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F7F6F2]">
+    <div className="min-h-screen bg-background">
       <main className="max-w-[760px] mx-auto px-6 py-14 pb-20">
         {/* HEADER */}
         <Link
           href="/dashboard"
-          className="text-[13px] text-[#6B7280] hover:text-[#0F1117] mb-8 inline-flex items-center gap-1 transition-colors"
+          className="text-[13px] text-muted-foreground hover:text-foreground mb-8 inline-flex items-center gap-1 transition-colors"
         >
           ← Back
         </Link>
 
-        <h1 className="font-[family-name:var(--font-serif)] text-[36px] tracking-[-0.8px] text-[#0F1117] mb-1">
+        <h1 className="font-[family-name:var(--font-serif)] text-[36px] tracking-[-0.8px] text-foreground mb-1">
           Claim Simulator
         </h1>
-        <p className="text-[15px] text-[#6B7280] mb-8">
+        <p className="text-[15px] text-muted-foreground mb-8">
           Describe a real situation and find out if your policy covers it.
         </p>
 
         {/* POLICY SELECTOR CARD */}
-        <div className="bg-white border border-[#E5E3DC] rounded-2xl p-6 mb-4 shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_16px_rgba(0,0,0,0.04)]">
-          <div className="text-[12px] text-[#9CA3AF] uppercase tracking-wide mb-3 font-medium">
+        <div className="bg-card border border-border rounded-2xl p-6 mb-4 shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_16px_rgba(0,0,0,0.04)] dark:shadow-[0_1px_3px_rgba(0,0,0,0.3),0_4px_16px_rgba(0,0,0,0.2)]">
+          <div className="text-[12px] text-muted-foreground uppercase tracking-wide mb-3 font-medium">
             Simulating against:
           </div>
 
           {loadingPolicies ? (
             <div className="flex items-center justify-center py-8">
               <div className="flex flex-col items-center gap-3">
-                <div className="w-6 h-6 rounded-full border-2 border-[#E5E3DC] border-t-[#1A3FBE] animate-spin"/>
-                <p className="text-[13px] text-[#6B7280]">Loading policies...</p>
+                <div className="w-6 h-6 rounded-full border-2 border-border border-t-blue-700 dark:border-t-blue-300 animate-spin"/>
+                <p className="text-[13px] text-muted-foreground">Loading policies...</p>
               </div>
             </div>
           ) : selectedPolicy ? (
             <div className="flex items-center justify-between gap-3">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-[#F0EEE8] rounded-xl flex items-center justify-center text-[#6B7280] flex-shrink-0">
+                <div className="w-10 h-10 bg-secondary rounded-xl flex items-center justify-center text-muted-foreground flex-shrink-0">
                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z" />
                   </svg>
                 </div>
                 <div>
-                  <div className="text-[13px] font-medium text-[#0F1117]">
+                  <div className="text-[13px] font-medium text-foreground">
                     {selectedPolicy.policy_type} Insurance
                   </div>
-                  <div className="text-[11px] text-[#9CA3AF] mt-0.5">
+                  <div className="text-[11px] text-muted-foreground mt-0.5">
                     {selectedPolicy.file_name}
                   </div>
                 </div>
               </div>
               <Link
                 href="/dashboard"
-                className="text-[12px] text-[#1A3FBE] font-medium hover:underline"
+                className="text-[12px] text-primary font-medium hover:underline"
               >
                 change
               </Link>
             </div>
           ) : (
-            <div className="text-[14px] text-[#DC2626] mb-3">
+            <div className="text-[14px] text-red-700 dark:text-red-300 mb-3">
               No policy found. Analyze a policy first.
             </div>
           )}
         </div>
 
         {/* SCENARIO INPUT CARD */}
-        <div className="bg-white border border-[#E5E3DC] rounded-2xl p-6 mb-4 shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_16px_rgba(0,0,0,0.04)]">
-          <label className="text-[14px] font-medium text-[#0F1117] mb-3 block">
+        <div className="bg-card border border-border rounded-2xl p-6 mb-4 shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_16px_rgba(0,0,0,0.04)] dark:shadow-[0_1px_3px_rgba(0,0,0,0.3),0_4px_16px_rgba(0,0,0,0.2)]">
+          <label className="text-[14px] font-medium text-foreground mb-3 block">
             Describe your claim scenario
           </label>
 
@@ -234,10 +249,10 @@ export default function SimulatePage() {
             value={scenario}
             onChange={(e) => setScenario(e.target.value)}
             placeholder="e.g. I was in a road accident and hospitalized for 3 days at a non-network hospital. Surgery was required."
-            className="w-full min-h-[120px] bg-[#F7F6F2] border border-[#E5E3DC] rounded-xl p-4 text-[14px] text-[#0F1117] placeholder-[#9CA3AF] resize-none focus:outline-none focus:border-[#1A3FBE] transition-colors"
+            className="w-full min-h-[120px] bg-background border border-border rounded-xl p-4 text-[14px] text-foreground placeholder-muted-foreground resize-none focus:outline-none focus:border-primary transition-colors"
           />
 
-          <div className="text-[12px] text-[#9CA3AF] text-right mt-2">
+          <div className="text-[12px] text-muted-foreground text-right mt-2">
             {scenario.length} characters
           </div>
 
@@ -246,7 +261,7 @@ export default function SimulatePage() {
               <button
                 key={s}
                 onClick={() => setScenario(s)}
-                className="bg-[#F0EEE8] border border-[#E5E3DC] text-[12px] text-[#6B7280] px-3 py-1.5 rounded-full cursor-pointer hover:border-[#1A3FBE] hover:text-[#1A3FBE] transition-colors"
+                className="bg-secondary border border-border text-[12px] text-muted-foreground px-3 py-1.5 rounded-full cursor-pointer hover:border-primary hover:text-primary transition-colors dark:hover:border-primary"
               >
                 {s}
               </button>
@@ -254,7 +269,7 @@ export default function SimulatePage() {
           </div>
 
           {error && (
-            <div className="flex items-center gap-3 bg-[#FEF2F2] border border-red-200 rounded-xl p-3.5 px-4 mt-4 text-[13px] text-[#DC2626]">
+            <div className="flex items-center gap-3 bg-red-100 dark:bg-red-950 border border-red-300 dark:border-red-800 rounded-xl p-3.5 px-4 mt-4 text-[13px] text-red-700 dark:text-red-300">
               <svg
                 className="w-[16px] h-[16px] flex-shrink-0"
                 fill="currentColor"
@@ -269,7 +284,11 @@ export default function SimulatePage() {
           <button
             onClick={handleSimulate}
             disabled={loading || !scenario || !selectedPolicy}
-            className="w-full mt-6 bg-[#1A3FBE] text-white rounded-xl py-[15px] px-6 text-[15px] font-medium flex items-center justify-center gap-2 transition-all duration-200 hover:bg-[#1535A8] hover:-translate-y-px hover:shadow-[0_8px_24px_rgba(26,63,190,0.25)] disabled:bg-[#F0EEE8] disabled:text-[#9CA3AF] disabled:cursor-not-allowed disabled:shadow-none disabled:translate-y-0"
+            style={{
+              backgroundColor: isDarkMode ? '#ffffff' : '#000000',
+              color: isDarkMode ? '#000000' : '#ffffff',
+            }}
+            className="w-full mt-6 rounded-xl py-[15px] px-6 text-[15px] font-medium flex items-center justify-center gap-2 transition-all duration-200 hover:-translate-y-px hover:shadow-xl disabled:cursor-not-allowed disabled:shadow-none disabled:translate-y-0 disabled:opacity-60"
           >
             <svg
               className="w-[18px] h-[18px]"
@@ -290,12 +309,12 @@ export default function SimulatePage() {
 
         {/* LOADING STATE */}
         {loading && (
-          <div className="bg-white border border-[#E5E3DC] rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_16px_rgba(0,0,0,0.04)] p-14 text-center">
-            <div className="w-12 h-12 rounded-full border-[3px] border-[#E5E3DC] border-t-[#1A3FBE] animate-spin mx-auto mb-6" />
-            <h2 className="font-[family-name:var(--font-serif)] text-2xl text-[#0F1117] tracking-[-0.5px] mb-1.5">
+          <div className="bg-card border border-border rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_16px_rgba(0,0,0,0.04)] dark:shadow-[0_1px_3px_rgba(0,0,0,0.3),0_4px_16px_rgba(0,0,0,0.2)] p-14 text-center">
+            <div className="w-12 h-12 rounded-full border-[3px] border-border border-t-blue-700 dark:border-t-blue-300 animate-spin mx-auto mb-6" />
+            <h2 className="font-[family-name:var(--font-serif)] text-2xl text-foreground tracking-[-0.5px] mb-1.5">
               Evaluating your claim scenario…
             </h2>
-            <p className="text-sm text-[#6B7280]">
+            <p className="text-sm text-muted-foreground">
               Checking against policy terms…
             </p>
           </div>
@@ -305,9 +324,9 @@ export default function SimulatePage() {
         {!loading && result && (
           <>
             {/* Verdict Card */}
-            <div className="bg-white border border-[#E5E3DC] rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_16px_rgba(0,0,0,0.04)] p-8 mb-4 flex items-center justify-between gap-6 flex-wrap">
+            <div className="bg-card border border-border rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_16px_rgba(0,0,0,0.04)] dark:shadow-[0_1px_3px_rgba(0,0,0,0.3),0_4px_16px_rgba(0,0,0,0.2)] p-8 mb-4 flex items-center justify-between gap-6 flex-wrap">
               <div className="flex-1 min-w-[200px]">
-                <div className="text-[11px] font-medium uppercase tracking-[0.8px] text-[#9CA3AF] mb-1.5">
+                <div className="text-[11px] font-medium uppercase tracking-[0.8px] text-muted-foreground mb-1.5">
                   Claim Verdict
                 </div>
                 <h2
@@ -316,7 +335,7 @@ export default function SimulatePage() {
                 >
                   {result.verdict}
                 </h2>
-                <p className="text-[14px] text-[#6B7280] leading-relaxed">
+                <p className="text-[14px] text-muted-foreground leading-relaxed">
                   {result.reasoning}
                 </p>
               </div>
@@ -337,7 +356,7 @@ export default function SimulatePage() {
                     >
                       {result.approval_chance}%
                     </div>
-                    <div className="text-[11px] text-[#9CA3AF] mt-0.5">
+                    <div className="text-[11px] text-muted-foreground mt-0.5">
                       approval chance
                     </div>
                   </div>
@@ -348,21 +367,21 @@ export default function SimulatePage() {
             {/* Results Grid */}
             <div className="grid grid-cols-2 gap-4 mb-4 max-sm:grid-cols-1">
               {/* Covered Aspects */}
-              <div className="bg-white border border-[#E5E3DC] rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_16px_rgba(0,0,0,0.04)] overflow-hidden">
-                <div className="p-4 px-5 border-b border-[#E5E3DC] flex items-center gap-2.5">
-                  <div className="w-8 h-8 bg-[#ECFDF5] rounded-lg flex items-center justify-center flex-shrink-0">
+              <div className="bg-card border border-border rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_16px_rgba(0,0,0,0.04)] dark:shadow-[0_1px_3px_rgba(0,0,0,0.3),0_4px_16px_rgba(0,0,0,0.2)] overflow-hidden">
+                <div className="p-4 px-5 border-b border-border flex items-center gap-2.5 bg-green-100 dark:bg-green-950">
+                  <div className="w-8 h-8 bg-white dark:bg-green-900 rounded-lg flex items-center justify-center flex-shrink-0">
                     <svg
-                      className="w-[16px] h-[16px] text-[#059669]"
+                      className="w-[16px] h-[16px] text-green-700 dark:text-green-300"
                       fill="currentColor"
                       viewBox="0 0 24 24"
                     >
                       <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
                     </svg>
                   </div>
-                  <span className="text-sm font-medium text-[#0F1117]">
+                  <span className="text-sm font-medium text-green-900 dark:text-green-100">
                     What's covered
                   </span>
-                  <span className="ml-auto bg-[#ECFDF5] text-[#059669] text-[11px] font-semibold px-2 py-0.5 rounded-full">
+                  <span className="ml-auto bg-white dark:bg-green-900 text-green-700 dark:text-green-300 text-[11px] font-semibold px-2 py-0.5 rounded-full">
                     {result.covered_aspects.length}
                   </span>
                 </div>
@@ -371,14 +390,14 @@ export default function SimulatePage() {
                     result.covered_aspects.map((item, idx) => (
                       <div
                         key={idx}
-                        className="flex items-start gap-2.5 p-2.5 px-3 rounded-lg bg-[#F0FDF9] text-[13px] text-[#0F1117] leading-relaxed"
+                        className="flex items-start gap-2.5 p-2.5 px-3 rounded-lg bg-green-100 dark:bg-green-950 text-[13px] text-foreground leading-relaxed"
                       >
-                        <div className="w-1.5 h-1.5 rounded-full bg-[#059669] mt-[7px] flex-shrink-0" />
+                        <div className="w-1.5 h-1.5 rounded-full bg-green-700 dark:bg-green-300 mt-[7px] flex-shrink-0" />
                         <span>{item}</span>
                       </div>
                     ))
                   ) : (
-                    <p className="p-6 text-center text-[13px] text-[#9CA3AF]">
+                    <p className="p-6 text-center text-[13px] text-muted-foreground">
                       None identified
                     </p>
                   )}
@@ -386,21 +405,21 @@ export default function SimulatePage() {
               </div>
 
               {/* Not Covered Aspects */}
-              <div className="bg-white border border-[#E5E3DC] rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_16px_rgba(0,0,0,0.04)] overflow-hidden">
-                <div className="p-4 px-5 border-b border-[#E5E3DC] flex items-center gap-2.5">
-                  <div className="w-8 h-8 bg-[#FEF2F2] rounded-lg flex items-center justify-center flex-shrink-0">
+              <div className="bg-card border border-border rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_16px_rgba(0,0,0,0.04)] dark:shadow-[0_1px_3px_rgba(0,0,0,0.3),0_4px_16px_rgba(0,0,0,0.2)] overflow-hidden">
+                <div className="p-4 px-5 border-b border-border flex items-center gap-2.5 bg-red-100 dark:bg-red-950">
+                  <div className="w-8 h-8 bg-white dark:bg-red-900 rounded-lg flex items-center justify-center flex-shrink-0">
                     <svg
-                      className="w-[16px] h-[16px] text-[#DC2626]"
+                      className="w-[16px] h-[16px] text-red-700 dark:text-red-300"
                       fill="currentColor"
                       viewBox="0 0 24 24"
                     >
                       <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
                     </svg>
                   </div>
-                  <span className="text-sm font-medium text-[#0F1117]">
+                  <span className="text-sm font-medium text-red-900 dark:text-red-100">
                     What's not covered
                   </span>
-                  <span className="ml-auto bg-[#FEF2F2] text-[#DC2626] text-[11px] font-semibold px-2 py-0.5 rounded-full">
+                  <span className="ml-auto bg-white dark:bg-red-900 text-red-700 dark:text-red-300 text-[11px] font-semibold px-2 py-0.5 rounded-full">
                     {result.not_covered_aspects.length}
                   </span>
                 </div>
@@ -409,14 +428,14 @@ export default function SimulatePage() {
                     result.not_covered_aspects.map((item, idx) => (
                       <div
                         key={idx}
-                        className="flex items-start gap-2.5 p-2.5 px-3 rounded-lg bg-[#FFF5F5] text-[13px] text-[#0F1117] leading-relaxed"
+                        className="flex items-start gap-2.5 p-2.5 px-3 rounded-lg bg-red-100 dark:bg-red-950 text-[13px] text-foreground leading-relaxed"
                       >
-                        <div className="w-1.5 h-1.5 rounded-full bg-[#DC2626] mt-[7px] flex-shrink-0" />
+                        <div className="w-1.5 h-1.5 rounded-full bg-red-700 dark:bg-red-300 mt-[7px] flex-shrink-0" />
                         <span>{item}</span>
                       </div>
                     ))
                   ) : (
-                    <p className="p-6 text-center text-[13px] text-[#059669] font-medium">
+                    <p className="p-6 text-center text-[13px] text-green-700 dark:text-green-300 font-medium">
                       None — scenario appears fully covered
                     </p>
                   )}
@@ -424,21 +443,21 @@ export default function SimulatePage() {
               </div>
 
               {/* Risks - Full Width */}
-              <div className="col-span-2 max-sm:col-span-1 bg-white border border-[#E5E3DC] rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_16px_rgba(0,0,0,0.04)] overflow-hidden">
-                <div className="p-4 px-5 border-b border-[#E5E3DC] flex items-center gap-2.5">
-                  <div className="w-8 h-8 bg-[#FFFBEB] rounded-lg flex items-center justify-center flex-shrink-0">
+              <div className="col-span-2 max-sm:col-span-1 bg-card border border-border rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_16px_rgba(0,0,0,0.04)] dark:shadow-[0_1px_3px_rgba(0,0,0,0.3),0_4px_16px_rgba(0,0,0,0.2)] overflow-hidden">
+                <div className="p-4 px-5 border-b border-border flex items-center gap-2.5 bg-amber-100 dark:bg-amber-950">
+                  <div className="w-8 h-8 bg-white dark:bg-amber-900 rounded-lg flex items-center justify-center flex-shrink-0">
                     <svg
-                      className="w-[16px] h-[16px] text-[#D97706]"
+                      className="w-[16px] h-[16px] text-amber-700 dark:text-amber-300"
                       fill="currentColor"
                       viewBox="0 0 24 24"
                     >
                       <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z" />
                     </svg>
                   </div>
-                  <span className="text-sm font-medium text-[#0F1117]">
+                  <span className="text-sm font-medium text-amber-900 dark:text-amber-100">
                     Risks that could affect your claim
                   </span>
-                  <span className="ml-auto bg-[#FFFBEB] text-[#D97706] text-[11px] font-semibold px-2 py-0.5 rounded-full">
+                  <span className="ml-auto bg-white dark:bg-amber-900 text-amber-700 dark:text-amber-300 text-[11px] font-semibold px-2 py-0.5 rounded-full">
                     {result.risks.length}
                   </span>
                 </div>
@@ -448,15 +467,15 @@ export default function SimulatePage() {
                       {result.risks.map((item, idx) => (
                         <div
                           key={idx}
-                          className="flex items-start gap-2.5 p-2.5 px-3 rounded-lg bg-[#FFFDF0] text-[13px] text-[#0F1117] leading-relaxed"
+                          className="flex items-start gap-2.5 p-2.5 px-3 rounded-lg bg-amber-100 dark:bg-amber-950 text-[13px] text-foreground leading-relaxed"
                         >
-                          <div className="w-1.5 h-1.5 rounded-full bg-[#D97706] mt-[7px] flex-shrink-0" />
+                          <div className="w-1.5 h-1.5 rounded-full bg-amber-700 dark:bg-amber-300 mt-[7px] flex-shrink-0" />
                           <span>{item}</span>
                         </div>
                       ))}
                     </div>
                   ) : (
-                    <p className="p-6 text-center text-[13px] text-[#9CA3AF]">
+                    <p className="p-6 text-center text-[13px] text-muted-foreground">
                       None identified
                     </p>
                   )}
@@ -464,18 +483,18 @@ export default function SimulatePage() {
               </div>
 
               {/* Documents Needed - Full Width */}
-              <div className="col-span-2 max-sm:col-span-1 bg-white border border-[#E5E3DC] rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_16px_rgba(0,0,0,0.04)] overflow-hidden">
-                <div className="p-4 px-5 border-b border-[#E5E3DC] flex items-center gap-2.5 bg-[#EEF2FF]">
-                  <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center flex-shrink-0">
+              <div className="col-span-2 max-sm:col-span-1 bg-card border border-border rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_16px_rgba(0,0,0,0.04)] dark:shadow-[0_1px_3px_rgba(0,0,0,0.3),0_4px_16px_rgba(0,0,0,0.2)] overflow-hidden">
+                <div className="p-4 px-5 border-b border-border flex items-center gap-2.5 bg-blue-100 dark:bg-blue-950">
+                  <div className="w-8 h-8 bg-white dark:bg-blue-900 rounded-lg flex items-center justify-center flex-shrink-0">
                     <svg
-                      className="w-[16px] h-[16px] text-[#1A3FBE]"
+                      className="w-[16px] h-[16px] text-blue-700 dark:text-blue-300"
                       fill="currentColor"
                       viewBox="0 0 24 24"
                     >
                       <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z" />
                     </svg>
                   </div>
-                  <span className="text-sm font-medium text-[#0F1117]">
+                  <span className="text-sm font-medium text-blue-900 dark:text-blue-100">
                     Documents you'll need to submit
                   </span>
                 </div>
@@ -485,19 +504,19 @@ export default function SimulatePage() {
                       {result.documents_needed.map((doc, idx) => (
                         <div
                           key={idx}
-                          className="flex items-start gap-3 p-3 rounded-lg bg-[#F7F8FF]"
+                          className="flex items-start gap-3 p-3 rounded-lg bg-blue-100 dark:bg-blue-950"
                         >
-                          <div className="w-6 h-6 bg-[#1A3FBE] text-white text-[11px] rounded-full flex items-center justify-center font-medium flex-shrink-0 mt-0.5">
+                          <div className="w-6 h-6 bg-blue-700 dark:bg-blue-600 text-white text-[11px] rounded-full flex items-center justify-center font-medium flex-shrink-0 mt-0.5">
                             {idx + 1}
                           </div>
-                          <span className="text-[13px] text-[#0F1117] leading-relaxed pt-0.5">
+                          <span className="text-[13px] text-foreground leading-relaxed pt-0.5">
                             {doc}
                           </span>
                         </div>
                       ))}
                     </div>
                   ) : (
-                    <p className="p-6 text-center text-[13px] text-[#9CA3AF]">
+                    <p className="p-6 text-center text-[13px] text-muted-foreground">
                       None identified
                     </p>
                   )}
@@ -506,14 +525,14 @@ export default function SimulatePage() {
             </div>
 
             {/* Try Another Scenario Button */}
-            <div className="bg-white border border-[#E5E3DC] rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_16px_rgba(0,0,0,0.04)] p-6 px-8 flex items-center justify-between gap-4 flex-wrap">
+            <div className="bg-card border border-border rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_16px_rgba(0,0,0,0.04)] dark:shadow-[0_1px_3px_rgba(0,0,0,0.3),0_4px_16px_rgba(0,0,0,0.2)] p-6 px-8 flex items-center justify-between gap-4 flex-wrap">
               <div>
                 <p>
-                  <strong className="font-medium text-[#0F1117]">
+                  <strong className="font-medium text-foreground">
                     Want to simulate another scenario?
                   </strong>
                 </p>
-                <p className="text-sm text-[#6B7280] mt-0.5">
+                <p className="text-sm text-muted-foreground mt-0.5">
                   Test a different situation against this policy.
                 </p>
               </div>
@@ -523,7 +542,7 @@ export default function SimulatePage() {
                   setScenario('');
                   setError('');
                 }}
-                className="bg-[#F0EEE8] border border-[#E5E3DC] rounded-xl px-5 py-2.5 text-sm font-medium text-[#0F1117] flex items-center gap-1.5 hover:bg-[#E5E3DC] transition-colors whitespace-nowrap"
+                className="bg-secondary border border-border rounded-xl px-5 py-2.5 text-sm font-medium text-foreground flex items-center gap-1.5 hover:bg-border transition-colors whitespace-nowrap"
               >
                 <svg
                   className="w-[16px] h-[16px]"
@@ -546,7 +565,7 @@ export default function SimulatePage() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-[#E5E3DC] text-center py-6 text-xs text-[#9CA3AF]">
+      <footer className="border-t border-border text-center py-6 text-xs text-muted-foreground">
         PolicyLens v1.0.0 · AI-Powered Insurance Policy Analysis · Built with
         FastAPI + Next.js
       </footer>
