@@ -52,8 +52,8 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
               'focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10',
               'hover:border-border/60',
               'appearance-none cursor-pointer',
-              error && 'border-red-500 focus:border-red-500 focus:ring-red-500/10',
-              icon && 'pl-10',
+              error ? 'border-red-500 focus:border-red-500 focus:ring-red-500/10' : '',
+              icon ? 'pl-10' : '',
               'pr-10',
               className
             )}
