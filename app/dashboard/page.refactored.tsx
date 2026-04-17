@@ -38,9 +38,8 @@ export default function Dashboard() {
 
   async function fetchPolicies() {
     setLoading(true);
-    const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/policies`;
     try {
-      const res = await apiFetch(apiUrl);
+      const res = await apiFetch('/api/policies');
       if (!res.ok) {
         throw new Error(`API error: ${res.status}`);
       }
@@ -55,7 +54,7 @@ export default function Dashboard() {
 
   async function handleDelete(id: number) {
     try {
-      await apiFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/policies/${id}`, {
+      await apiFetch(`/api/policies/${id}`, {
         method: 'DELETE',
       });
       setPolicies((prev) => prev.filter((p) => p.id !== id));
@@ -68,7 +67,7 @@ export default function Dashboard() {
   async function handleClearAll() {
     try {
       for (const policy of policies) {
-        await apiFetch(`${process.env.NEXT_PUBLIC_API_URL}/api/policies/${policy.id}`, {
+        await apiFetch(`/api/policies/${policy.id}`, {
           method: 'DELETE',
         });
       }

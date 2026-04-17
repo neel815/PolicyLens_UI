@@ -63,9 +63,7 @@ function PolicyDetailPage() {
 
     const fetchPolicy = async () => {
       try {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-        
-        const response = await apiFetch(`${apiUrl}/api/policies/${policyId}`);
+        const response = await apiFetch(`/api/policies/${policyId}`);
 
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({}));
@@ -76,7 +74,7 @@ function PolicyDetailPage() {
         setPolicy(data);
 
         // Try to fetch simulations for this policy
-        const simResponse = await apiFetch(`${apiUrl}/api/policies/${policyId}/simulations`);
+        const simResponse = await apiFetch(`/api/policies/${policyId}/simulations`);
 
         if (simResponse.ok) {
           const simData = await simResponse.json();
@@ -96,9 +94,7 @@ function PolicyDetailPage() {
 
   const handleDelete = async () => {
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-      
-      const response = await apiFetch(`${apiUrl}/api/policies/${policyId}`, {
+      const response = await apiFetch(`/api/policies/${policyId}`, {
         method: 'DELETE',
       });
 

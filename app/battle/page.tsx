@@ -133,7 +133,7 @@ export default function BattlePage() {
     setLoadingSaved(true);
     try {
       const res = await apiFetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/policies`
+        `/api/policies`
       );
       if (res.ok) {
         const data = await res.json();
@@ -207,7 +207,7 @@ export default function BattlePage() {
       }
 
       const res = await apiFetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/battle`,
+        `/api/battle`,
         { method: 'POST', body: formData }
       );
 

@@ -73,7 +73,7 @@ export default function SimulatePage() {
     try {
       // First get list of policies
       const listRes = await apiFetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/policies`
+        `/api/policies`
       );
       if (!listRes.ok) throw new Error('Failed to load policies');
       const list = await listRes.json();
@@ -84,7 +84,7 @@ export default function SimulatePage() {
       if (urlId) {
         // Fetch full policy details (includes covered_events etc)
         const detailRes = await apiFetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/policies/${urlId}`
+          `/api/policies/${urlId}`
         );
         if (detailRes.ok) {
           const detail = await detailRes.json();
@@ -92,13 +92,13 @@ export default function SimulatePage() {
         } else if (list.length > 0) {
           // Fallback: fetch first policy details
           const fallbackRes = await apiFetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/api/policies/${list[0].id}`
+            `/api/policies/${list[0].id}`
           );
           if (fallbackRes.ok) setSelectedPolicy(await fallbackRes.json());
         }
       } else if (list.length > 0) {
         const fallbackRes = await apiFetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/policies/${list[0].id}`
+          `/api/policies/${list[0].id}`
         );
         if (fallbackRes.ok) setSelectedPolicy(await fallbackRes.json());
       }
@@ -125,8 +125,7 @@ export default function SimulatePage() {
     setSimulateResult(null);
 
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-      const response = await apiFetch(`${apiUrl}/api/simulate-claim`, {
+      const response = await apiFetch(`/api/simulate-claim`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

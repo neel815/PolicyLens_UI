@@ -103,8 +103,7 @@ export default function Home() {
       const formData = new FormData();
       formData.append("file", file);
 
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-      const response = await apiFetch(`${apiUrl}/api/analyze`, {
+      const response = await apiFetch(`/api/analyze`, {
         method: "POST",
         body: formData,
       });

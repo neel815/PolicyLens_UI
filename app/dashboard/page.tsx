@@ -39,11 +39,10 @@ export default function Dashboard() {
 
   async function fetchPolicies() {
     setLoading(true);
-    const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/policies`;
-    console.log('📍 Fetching from:', apiUrl);
+    console.log('📍 Fetching from:', '/api/policies');
     
     try {
-      const res = await apiFetch(apiUrl);
+      const res = await apiFetch('/api/policies');
       
       // Log response status for debugging
       console.log('✅ Response status:', res.status, res.statusText);
@@ -72,7 +71,7 @@ export default function Dashboard() {
   async function handleDelete(id: number) {
     try {
       await apiFetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/policies/${id}`,
+        `/api/policies/${id}`,
         { method: 'DELETE' }
       );
       setPolicies(prev => prev.filter(p => p.id !== id));
@@ -85,10 +84,9 @@ export default function Dashboard() {
   async function handleClearAll() {
     try {
       // Delete all policies one by one or make a bulk delete endpoint
-      const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/policies`;
       await Promise.all(
         policies.map(p =>
-          apiFetch(`${apiUrl}/${p.id}`, { method: 'DELETE' })
+          apiFetch(`/api/policies/${p.id}`, { method: 'DELETE' })
         )
       );
       setPolicies([]);
