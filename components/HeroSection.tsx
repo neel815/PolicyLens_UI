@@ -22,7 +22,7 @@ export function HeroSection() {
         AI-Powered Insurance Analysis
       </div>
 
-      <h1 className="text-2xl md:text-3xl lg:text-4xl tracking-tight leading-tight font-[family-name:var(--font-serif)]">
+      <h1 className="text-2xl md:text-3xl lg:text-4xl tracking-tight leading-tight font-serif">
         Understand your policy{" "}
         <em className="text-gradient not-italic">in 60 seconds</em>
       </h1>

@@ -230,7 +230,7 @@ export default function BattlePage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <main className="max-w-[860px] mx-auto px-6 py-14 pb-20">
+      <main className="max-w-215 mx-auto px-6 py-14 pb-20">
         {/* HEADER */}
         <Link
           href="/dashboard"
@@ -239,7 +239,7 @@ export default function BattlePage() {
           ← Back
         </Link>
 
-        <h1 className="font-[family-name:var(--font-serif)] text-[36px] tracking-[-0.8px] text-foreground mb-1">
+        <h1 className="font-serif text-[36px] tracking-[-0.8px] text-foreground mb-1">
           Policy Battle
         </h1>
         <p className="text-[15px] text-muted-foreground mb-8">
@@ -299,7 +299,7 @@ export default function BattlePage() {
                   {!file1 ? (
                     <div
                       onClick={() => fileInput1Ref.current?.click()}
-                      className="border-2 border-dashed border-border rounded-xl p-8 text-center cursor-pointer hover:border-primary hover:bg-primary/[0.06] transition-all"
+                      className="border-2 border-dashed border-border rounded-xl p-8 text-center cursor-pointer hover:border-primary hover:bg-primary/6 transition-all"
                     >
                       <svg
                         className="w-6 h-6 text-muted-foreground mx-auto mb-2"
@@ -319,7 +319,7 @@ export default function BattlePage() {
                     </div>
                   ) : (
                     <div className="flex items-center gap-3 bg-secondary border border-border rounded-xl p-3">
-                      <div className="w-8 h-8 bg-blue-700 dark:bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <div className="w-8 h-8 bg-blue-700 dark:bg-blue-600 rounded-lg flex items-center justify-center shrink-0">
                         <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
                           <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z" />
                         </svg>
@@ -337,7 +337,7 @@ export default function BattlePage() {
                           setFile1(null);
                           if (fileInput1Ref.current) fileInput1Ref.current.value = '';
                         }}
-                        className="text-muted-foreground hover:text-blue-700 dark:hover:text-blue-300 transition-colors flex-shrink-0"
+                        className="text-muted-foreground hover:text-blue-700 dark:hover:text-blue-300 transition-colors shrink-0"
                       >
                         <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                           <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z" />
@@ -393,7 +393,7 @@ export default function BattlePage() {
 
           {/* VS Divider */}
           <div className="hidden sm:flex flex-col items-center justify-center pt-12 gap-2">
-            <div className="font-[family-name:var(--font-serif)] text-[28px] text-border font-400">
+            <div className="font-serif text-[28px] text-border font-400">
               VS
             </div>
             <svg className="w-4 h-4 text-muted-foreground" fill="currentColor" viewBox="0 0 24 24">
@@ -452,7 +452,7 @@ export default function BattlePage() {
                   {!file2 ? (
                     <div
                       onClick={() => fileInput2Ref.current?.click()}
-                      className="border-2 border-dashed border-border rounded-xl p-8 text-center cursor-pointer hover:border-primary hover:bg-primary/[0.06] transition-all"
+                      className="border-2 border-dashed border-border rounded-xl p-8 text-center cursor-pointer hover:border-primary hover:bg-primary/6 transition-all"
                     >
                       <svg
                         className="w-6 h-6 text-muted-foreground mx-auto mb-2"
@@ -472,7 +472,7 @@ export default function BattlePage() {
                     </div>
                   ) : (
                     <div className="flex items-center gap-3 bg-secondary border border-border rounded-xl p-3">
-                      <div className="w-8 h-8 bg-red-700 dark:bg-red-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <div className="w-8 h-8 bg-red-700 dark:bg-red-600 rounded-lg flex items-center justify-center shrink-0">
                         <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
                           <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z" />
                         </svg>
@@ -490,7 +490,7 @@ export default function BattlePage() {
                           setFile2(null);
                           if (fileInput2Ref.current) fileInput2Ref.current.value = '';
                         }}
-                        className="text-muted-foreground hover:text-red-700 dark:hover:text-red-300 transition-colors flex-shrink-0"
+                        className="text-muted-foreground hover:text-red-700 dark:hover:text-red-300 transition-colors shrink-0"
                       >
                         <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                           <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z" />
@@ -549,7 +549,7 @@ export default function BattlePage() {
         {error && (
           <div className="flex items-center gap-3 bg-red-100 dark:bg-red-950 border border-red-300 dark:border-red-800 rounded-2xl p-4 px-5 mb-6 text-[13px] text-red-700 dark:text-red-300">
             <svg
-              className="w-4 h-4 flex-shrink-0"
+              className="w-4 h-4 shrink-0"
               fill="currentColor"
               viewBox="0 0 24 24"
             >
@@ -570,7 +570,7 @@ export default function BattlePage() {
             {/* Glow effect background - only shows when both policies selected */}
             {hasPolicy1 && hasPolicy2 && !battling && (
               <motion.div
-                className="absolute inset-0 rounded-lg bg-gradient-to-r from-black via-black to-gray-800 dark:from-white dark:via-white dark:to-gray-200 opacity-60 blur-lg"
+                className="absolute inset-0 rounded-lg bg-linear-to-r from-black via-black to-gray-800 dark:from-white dark:via-white dark:to-gray-200 opacity-60 blur-lg"
                 animate={{
                   opacity: [0.4, 0.7, 0.4],
                 }}
@@ -596,7 +596,7 @@ export default function BattlePage() {
             {/* Shimmer effect background */}
             {hasPolicy1 && hasPolicy2 && !battling && (
               <motion.div
-                className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-0"
+                className="absolute inset-0 bg-linear-to-r from-transparent via-white to-transparent opacity-0"
                 animate={{
                   x: ["100%", "-100%"],
                 }}
@@ -678,12 +678,12 @@ export default function BattlePage() {
               {/* Content */}
               <div className="p-6 flex items-center justify-between gap-4 flex-wrap">
                 {/* Policy A */}
-                <div className="flex-1 min-w-[120px] text-center">
-                  <p className="text-[12px] text-muted-foreground mb-1 truncate max-w-[200px] mx-auto">
+                <div className="flex-1 min-w-30 text-center">
+                  <p className="text-[12px] text-muted-foreground mb-1 truncate max-w-50 mx-auto">
                     {result.policy_a_name}
                   </p>
                   <div
-                    className="font-[family-name:var(--font-serif)] text-[48px] leading-none tracking-[-2px]"
+                    className="font-serif text-[48px] leading-none tracking-[-2px]"
                     style={{
                       color:
                         result.overall_winner === 'A' ? 'var(--primary-700, #1A3FBE)' : 'var(--text-muted-foreground, #9CA3AF)',
@@ -696,7 +696,7 @@ export default function BattlePage() {
 
                 {/* Center */}
                 <div className="flex flex-col items-center gap-2">
-                  <div className="font-[family-name:var(--font-serif)] text-[20px] text-border">
+                  <div className="font-serif text-[20px] text-border">
                     VS
                   </div>
                   {showFinal && (
@@ -723,12 +723,12 @@ export default function BattlePage() {
                 </div>
 
                 {/* Policy B */}
-                <div className="flex-1 min-w-[120px] text-center">
-                  <p className="text-[12px] text-muted-foreground mb-1 truncate max-w-[200px] mx-auto">
+                <div className="flex-1 min-w-30 text-center">
+                  <p className="text-[12px] text-muted-foreground mb-1 truncate max-w-50 mx-auto">
                     {result.policy_b_name}
                   </p>
                   <div
-                    className="font-[family-name:var(--font-serif)] text-[48px] leading-none tracking-[-2px]"
+                    className="font-serif text-[48px] leading-none tracking-[-2px]"
                     style={{
                       color:
                         result.overall_winner === 'B' ? 'var(--red-700, #DC2626)' : 'var(--text-muted-foreground, #9CA3AF)',

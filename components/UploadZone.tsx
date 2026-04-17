@@ -63,7 +63,7 @@ export default function UploadZone({
     <div className="w-full space-y-4">
       {/* Info Box */}
       <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 flex items-start gap-3">
-        <Info className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+        <Info className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
         <div>
           <p className="text-sm text-blue-900 font-medium">Upload your Policy Document</p>
           <p className="text-sm text-blue-700 mt-1">

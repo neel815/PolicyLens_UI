@@ -260,7 +260,7 @@ export default function Dashboard() {
                         </div>
                         <div className="mt-2 w-full bg-border rounded-full h-1.5">
                           <div
-                            className="h-full rounded-full bg-gradient-to-r from-primary to-accent"
+                            className="h-full rounded-full bg-linear-to-r from-primary to-accent"
                             style={{ width: `${(policy.coverage_score / 10) * 100}%` }}
                           />
                         </div>

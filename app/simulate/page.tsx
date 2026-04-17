@@ -193,7 +193,7 @@ export default function SimulatePage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <main className="max-w-[760px] mx-auto px-6 py-14 pb-20">
+      <main className="max-w-190 mx-auto px-6 py-14 pb-20">
         {/* HEADER */}
         <Link
           href="/dashboard"
@@ -202,7 +202,7 @@ export default function SimulatePage() {
           ← Back
         </Link>
 
-        <h1 className="font-[family-name:var(--font-serif)] text-[36px] tracking-[-0.8px] text-foreground mb-1">
+        <h1 className="font-serif text-[36px] tracking-[-0.8px] text-foreground mb-1">
           Claim Simulator
         </h1>
         <p className="text-[15px] text-muted-foreground mb-8">
@@ -225,7 +225,7 @@ export default function SimulatePage() {
           ) : selectedPolicy ? (
             <div className="flex items-center justify-between gap-3">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-secondary rounded-xl flex items-center justify-center text-muted-foreground flex-shrink-0">
+                <div className="w-10 h-10 bg-secondary rounded-xl flex items-center justify-center text-muted-foreground shrink-0">
                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z" />
                   </svg>
@@ -285,7 +285,7 @@ export default function SimulatePage() {
           {error && (
             <div className="flex items-center gap-3 bg-red-100 dark:bg-red-950 border border-red-300 dark:border-red-800 rounded-xl p-3.5 px-4 mt-4 text-[13px] text-red-700 dark:text-red-300">
               <svg
-                className="w-[16px] h-[16px] flex-shrink-0"
+                className="w-4 h-4 shrink-0"
                 fill="currentColor"
                 viewBox="0 0 24 24"
               >
@@ -302,10 +302,10 @@ export default function SimulatePage() {
               backgroundColor: isDarkMode ? '#ffffff' : '#000000',
               color: isDarkMode ? '#000000' : '#ffffff',
             }}
-            className="w-full mt-6 rounded-xl py-[15px] px-6 text-[15px] font-medium flex items-center justify-center gap-2 transition-all duration-200 hover:-translate-y-px hover:shadow-xl disabled:cursor-not-allowed disabled:shadow-none disabled:translate-y-0 disabled:opacity-60"
+            className="w-full mt-6 rounded-xl py-3.75 px-6 text-[15px] font-medium flex items-center justify-center gap-2 transition-all duration-200 hover:-translate-y-px hover:shadow-xl disabled:cursor-not-allowed disabled:shadow-none disabled:translate-y-0 disabled:opacity-60"
           >
             <svg
-              className="w-[18px] h-[18px]"
+              className="w-4.5 h-4.5"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -342,12 +342,12 @@ export default function SimulatePage() {
           <>
             {/* Verdict Card */}
             <div className="bg-card border border-border rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_16px_rgba(0,0,0,0.04)] dark:shadow-[0_1px_3px_rgba(0,0,0,0.3),0_4px_16px_rgba(0,0,0,0.2)] p-8 mb-4 flex items-center justify-between gap-6 flex-wrap">
-              <div className="flex-1 min-w-[200px]">
+              <div className="flex-1 min-w-50">
                 <div className="text-[11px] font-medium uppercase tracking-[0.8px] text-muted-foreground mb-1.5">
                   Claim Verdict
                 </div>
                 <h2
-                  className="font-[family-name:var(--font-serif)] text-[32px] leading-none tracking-[-1px] mb-3"
+                  className="font-serif text-[32px] leading-none tracking-[-1px] mb-3"
                   style={{ color: getVerdictColor(result.verdict).text }}
                 >
                   {result.verdict}
@@ -359,14 +359,14 @@ export default function SimulatePage() {
 
               <div className="flex flex-col items-center">
                 <div
-                  className="w-[96px] h-[96px] rounded-full border-[4px] flex items-center justify-center"
+                  className="w-24 h-24 rounded-full border-4 flex items-center justify-center"
                   style={{
                     borderColor: getChanceColor(result.approval_chance).border,
                   }}
                 >
                   <div className="text-center">
                     <div
-                      className="font-[family-name:var(--font-serif)] text-[28px] font-medium"
+                      className="font-serif text-[28px] font-medium"
                       style={{
                         color: getChanceColor(result.approval_chance).text,
                       }}
@@ -386,9 +386,9 @@ export default function SimulatePage() {
               {/* Covered Aspects */}
               <div className="bg-card border border-border rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_16px_rgba(0,0,0,0.04)] dark:shadow-[0_1px_3px_rgba(0,0,0,0.3),0_4px_16px_rgba(0,0,0,0.2)] overflow-hidden">
                 <div className="p-4 px-5 border-b border-border flex items-center gap-2.5 bg-green-100 dark:bg-green-950">
-                  <div className="w-8 h-8 bg-white dark:bg-green-900 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <div className="w-8 h-8 bg-white dark:bg-green-900 rounded-lg flex items-center justify-center shrink-0">
                     <svg
-                      className="w-[16px] h-[16px] text-green-700 dark:text-green-300"
+                      className="w-4 h-4 text-green-700 dark:text-green-300"
                       fill="currentColor"
                       viewBox="0 0 24 24"
                     >

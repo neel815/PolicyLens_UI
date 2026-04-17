@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { getAuthHeader, isAuthenticated } from '@/lib/auth';
+import { apiFetch, isAuthenticated } from '@/lib/auth';
 import { SavedPolicy } from '@/types/analysis';
 import { savePolicy } from '@/lib/storage';
 import { Button } from '@/components/Button';
@@ -104,9 +104,8 @@ export default function Home() {
       formData.append("file", file);
 
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-      const response = await fetch(`${apiUrl}/api/analyze`, {
+      const response = await apiFetch(`${apiUrl}/api/analyze`, {
         method: "POST",
-        headers: getAuthHeader(),
         body: formData,
       });
 
@@ -263,9 +262,9 @@ export default function Home() {
 
         {/* RESULTS STATE */}
         {appState === "results" && result && (
-          <div className="max-w-[960px] mx-auto w-full space-y-6">
+          <div className="max-w-240 mx-auto w-full space-y-6">
             <div>
-              <h2 className="text-3xl font-[family-name:var(--font-serif)] tracking-[-0.8px] text-foreground mb-1">Analysis Complete</h2>
+              <h2 className="text-3xl font-serif tracking-[-0.8px] text-foreground mb-1">Analysis Complete</h2>
               <p className="text-[13px] text-muted-foreground">Review your policy coverage details below</p>
             </div>
 
@@ -274,13 +273,13 @@ export default function Home() {
               <div className="text-[11px] text-muted-foreground uppercase tracking-wide font-medium mb-4">
                 Overall Coverage Score
               </div>
-              <div className="font-[family-name:var(--font-serif)] text-[56px] leading-none tracking-[-2px] text-foreground mb-4">
+              <div className="font-serif text-[56px] leading-none tracking-[-2px] text-foreground mb-4">
                 {result.coverage_score}
                 <span className="text-[28px] text-muted-foreground">/10</span>
               </div>
               <div className="bg-secondary rounded-lg h-2.5 overflow-hidden mb-5">
                 <div
-                  className="h-full bg-primary rounded-lg transition-all duration-[1200ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
+                  className="h-full bg-primary rounded-lg transition-all duration-1200 ease-in-out"
                   style={{ width: `${scoreBarWidth}%` }}
                 />
               </div>
@@ -317,7 +316,7 @@ export default function Home() {
                         key={idx}
                         className="flex items-start gap-2.5 border-l-4 border-green-500 pl-3 py-2 text-[13px] text-foreground"
                       >
-                        <span className="flex-shrink-0">•</span>
+                        <span className="shrink-0">•</span>
                         <span>{item}</span>
                       </div>
                     ))
@@ -347,7 +346,7 @@ export default function Home() {
                         key={idx}
                         className="flex items-start gap-2.5 border-l-4 border-red-500 pl-3 py-2 text-[13px] text-foreground"
                       >
-                        <span className="flex-shrink-0">•</span>
+                        <span className="shrink-0">•</span>
                         <span>{item}</span>
                       </div>
                     ))
@@ -378,7 +377,7 @@ export default function Home() {
                       key={idx}
                       className="flex items-start gap-2.5 border-l-4 border-amber-500 pl-3 py-2 text-[13px] text-foreground"
                     >
-                      <span className="flex-shrink-0">•</span>
+                      <span className="shrink-0">•</span>
                       <span>{item}</span>
                     </div>
                   ))

@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { saveToken, saveUser } from '@/lib/auth';
+import { saveUser } from '@/lib/auth';
 import { Button } from '@/components/Button';
 import { Input } from '@/components/Input';
 import { Card } from '@/components/Card';
@@ -41,6 +41,7 @@ export default function LoginPage() {
       const response = await fetch(`${apiUrl}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include', // Important: Include cookies for authentication
         body: JSON.stringify(formData),
       });
 
@@ -50,7 +51,8 @@ export default function LoginPage() {
         throw new Error(json.detail || 'Login failed');
       }
 
-      saveToken(json.access_token);
+      // Token is now in HttpOnly cookie (handled automatically)
+      // Just save user info
       saveUser(json.user);
 
       router.push('/');
@@ -64,7 +66,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-4 py-12">
-      <div className="w-full max-w-[420px]">
+      <div className="w-full max-w-105">
         {/* Header */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-primary/10 mb-4">

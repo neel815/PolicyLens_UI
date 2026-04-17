@@ -40,7 +40,7 @@ export default function RootLayout({
     >
       <head>
       </head>
-      <body className="min-h-screen bg-background font-[family-name:var(--font-sans)] transition-colors duration-300">
+      <body className="min-h-screen bg-background font-sans transition-colors duration-300">
         <ThemeScript />
         <Suspense fallback={null}>
           <PageLoader />
