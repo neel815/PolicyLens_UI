@@ -238,6 +238,8 @@ function PolicyDetailPage() {
     return { text: '#ffffff', bg: '#DC2626', label: 'Poor' };
   };
 
+  if (!policy) return null;
+
   const scoreColor = getScoreColor(policy.coverage_score);
 
   return (
