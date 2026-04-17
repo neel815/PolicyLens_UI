@@ -4,26 +4,30 @@
   /* Light mode colors (default) */
   --background: 255 255 255;
   --foreground: 15 23 42;
-  --muted-foreground: 107 114 128;
+  --muted-foreground: 102 112 128;
   --card: 255 255 255;
-  --border: 229 231 235;
-  --secondary: 243 244 246;
+  --modal-card: 249 250 254;
+  --border: 225 229 235;
+  --modal-border: 209 220 237;
+  --secondary: 248 249 251;
   
-  /* Primary color (blue) */
+  /* Primary color (modern blue) */
   --primary: 26 63 190;
   --primary-foreground: 255 255 255;
   
-  /* Accent color (orange) */
+  /* Accent color (vibrant orange) */
   --accent: 249 115 22;
 }
 
 html.dark {
-  --background: 10 10 10;
-  --foreground: 245 245 245;
-  --muted-foreground: 163 230 53;
-  --card: 20 20 20;
-  --border: 40 40 40;
-  --secondary: 30 30 30;
+  --background: 9 10 13;
+  --foreground: 245 245 247;
+  --muted-foreground: 148 155 165;
+  --card: 17 19 25;
+  --modal-card: 23 27 35;
+  --border: 39 44 53;
+  --modal-border: 56 63 77;
+  --secondary: 23 27 35;
 }
 
 @theme inline {
@@ -31,7 +35,9 @@ html.dark {
   --color-foreground: rgb(var(--foreground) / <alpha-value>);
   --color-muted-foreground: rgb(var(--muted-foreground) / <alpha-value>);
   --color-card: rgb(var(--card) / <alpha-value>);
+  --color-modal-card: rgb(var(--modal-card) / <alpha-value>);
   --color-border: rgb(var(--border) / <alpha-value>);
+  --color-modal-border: rgb(var(--modal-border) / <alpha-value>);
   --color-secondary: rgb(var(--secondary) / <alpha-value>);
   --color-primary: rgb(var(--primary) / <alpha-value>);
   --color-primary-foreground: rgb(var(--primary-foreground) / <alpha-value>);
@@ -40,16 +46,118 @@ html.dark {
   --font-sans: var(--font-sans);
 }
 
+* {
+  @apply transition-colors duration-200;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   background: rgb(var(--background));
   color: rgb(var(--foreground));
   font-family: inherit;
 }
 
+/* Typography hierarchy */
+h1 {
+  @apply text-4xl lg:text-5xl font-semibold tracking-tight;
+}
+
+h2 {
+  @apply text-3xl lg:text-4xl font-semibold tracking-tight;
+}
+
+h3 {
+  @apply text-2xl font-semibold;
+}
+
+h4 {
+  @apply text-lg font-semibold;
+}
+
+p {
+  @apply text-base leading-relaxed;
+}
+
 /* Text gradient for hero section */
 .text-gradient {
-  background: linear-gradient(to right, rgb(var(--primary)), rgb(var(--accent)));
+  background: linear-gradient(135deg, rgb(var(--primary)), rgb(var(--accent)));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+}
+
+/* Subtle animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.4s ease-out;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgb(var(--background));
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgb(var(--border));
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--muted-foreground));
+}
+
+/* Modal card styling for enhanced light mode appearance */
+.modal-card {
+  @apply bg-modal-card border-modal-border;
+}
+
+/* Dialog/Modal overlay enhancements */
+[role="dialog"] {
+  @apply backdrop-blur-sm;
+}
+
+/* Improve modal card shadow and border */
+.modal-card-enhanced {
+  background: #ffffff !important;
+  border: 2px solid #d1dcef;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  color: #0f1728;
+}
+
+html.dark .modal-card-enhanced {
+  background: rgb(var(--modal-card)) !important;
+  border: 2px solid rgb(var(--modal-border));
+  color: rgb(var(--foreground));
 }

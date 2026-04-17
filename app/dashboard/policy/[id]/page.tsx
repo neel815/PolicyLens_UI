@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter, useParams } from 'next/navigation';
 import { apiFetch, isAuthenticated } from '@/lib/auth';
+import { Button } from '@/components/Button';
 
 interface PolicyDetail {
   id: number;
@@ -38,6 +39,21 @@ function PolicyDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  // Detect dark mode
+  useEffect(() => {
+    const isDark = document.documentElement.classList.contains('dark');
+    setIsDarkMode(isDark);
+
+    const observer = new MutationObserver(() => {
+      const isDark = document.documentElement.classList.contains('dark');
+      setIsDarkMode(isDark);
+    });
+
+    observer.observe(document.documentElement, { attributes: true });
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     if (!isAuthenticated()) {
@@ -115,11 +131,11 @@ function PolicyDetailPage() {
     if (Array.isArray(value)) {
       return (
         <div key={key} className="mb-4">
-          <div className="font-medium text-[#0F1117] mb-2">{formattedKey}</div>
+          <div className="font-medium text-foreground mb-2">{formattedKey}</div>
           <ul className="ml-4 space-y-1">
             {value.map((item: any, idx: number) => (
-              <li key={idx} className="flex items-start gap-2 text-[13px] text-[#6B7280]">
-                <span className="text-[#9CA3AF] flex-shrink-0 mt-0.5">•</span>
+              <li key={idx} className="flex items-start gap-2 text-[13px] text-muted-foreground">
+                <span className="text-muted-foreground flex-shrink-0 mt-0.5">•</span>
                 <span>{String(item)}</span>
               </li>
             ))}
@@ -131,12 +147,12 @@ function PolicyDetailPage() {
     if (typeof value === 'object' && value !== null) {
       return (
         <div key={key} className="mb-4">
-          <div className="font-medium text-[#0F1117] mb-2">{formattedKey}</div>
+          <div className="font-medium text-foreground mb-2">{formattedKey}</div>
           <div className="ml-4 space-y-2">
             {Object.entries(value).map(([k, v]: [string, any]) => (
               <div key={k}>
-                <div className="text-[#0F1117] font-medium text-[12px]">{k.replace(/_/g, ' ')}</div>
-                <div className="text-[#6B7280] text-[13px] ml-2">{String(v)}</div>
+                <div className="text-foreground font-medium text-[12px]">{k.replace(/_/g, ' ')}</div>
+                <div className="text-muted-foreground text-[13px] ml-2">{String(v)}</div>
               </div>
             ))}
           </div>
@@ -146,8 +162,8 @@ function PolicyDetailPage() {
     
     return (
       <div key={key} className="mb-4">
-        <div className="font-medium text-[#0F1117] mb-1">{formattedKey}</div>
-        <div className="text-[#6B7280] text-[13px] ml-4">{String(value)}</div>
+        <div className="font-medium text-foreground mb-1">{formattedKey}</div>
+        <div className="text-muted-foreground text-[13px] ml-4">{String(value)}</div>
       </div>
     );
   };
@@ -194,30 +210,22 @@ function PolicyDetailPage() {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-[#F7F6F2] font-[family-name:var(--font-sans)] flex items-center justify-center">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-8 h-8 rounded-full border-2 border-[#E5E3DC] border-t-[#1A3FBE] animate-spin" />
-          <p className="text-[14px] text-[#6B7280]">Loading policy...</p>
-        </div>
-      </div>
-    );
+  if (loading) {
+    return null; // PageLoader handles global loading state
   }
-
-  if (error || !policy) {
     return (
-      <div className="min-h-screen bg-[#F7F6F2] font-[family-name:var(--font-sans)]">
+      <div className="min-h-screen bg-background font-[family-name:var(--font-sans)]">
         <div className="max-w-[960px] mx-auto px-6 py-12">
-          <div className="bg-[#FEE2E2] border border-red-200 rounded-2xl p-8 text-center">
-            <h2 className="font-[family-name:var(--font-serif)] text-[24px] text-[#DC2626] tracking-[-0.5px] mb-2">
+          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-2xl p-8 text-center">
+            <h2 className="font-[family-name:var(--font-serif)] text-[24px] text-red-600 dark:text-red-400 tracking-[-0.5px] mb-2">
               Policy not found
             </h2>
-            <p className="text-[14px] text-[#9CA3AF] mb-6">
+            <p className="text-[14px] text-muted-foreground mb-6">
               {error || 'The policy you are looking for does not exist.'}
             </p>
             <Link
               href="/dashboard"
-              className="inline-flex items-center gap-2 bg-[#1A3FBE] text-white text-[14px] font-medium px-5 py-2.5 rounded-xl hover:bg-[#1535A8] transition-colors"
+              className="inline-flex items-center gap-2 bg-primary text-white text-[14px] font-medium px-5 py-2.5 rounded-xl hover:bg-primary/90 transition-colors"
             >
               ← Back to Dashboard
             </Link>
@@ -237,12 +245,13 @@ function PolicyDetailPage() {
   const scoreColor = getScoreColor(policy.coverage_score);
 
   return (
-    <div className="min-h-screen bg-[#F7F6F2] font-[family-name:var(--font-sans)]">
+    <div className="min-h-screen bg-background font-[family-name:var(--font-sans)]">
       {/* Header with Back Button */}
       <div className="max-w-[960px] mx-auto px-6 pt-8 pb-6">
         <Link
           href="/dashboard"
-          className="text-[14px] text-[#1A3FBE] font-medium hover:underline flex items-center gap-2 mb-6 w-fit"
+          style={{ color: isDarkMode ? '#ffffff' : '#000000' }}
+          className="text-[14px] font-medium hover:underline flex items-center gap-2 mb-6 w-fit"
         >
           ← Back to Dashboard
         </Link>
@@ -250,14 +259,20 @@ function PolicyDetailPage() {
         {/* Policy Header */}
         <div className="flex items-start justify-between gap-4 flex-wrap mb-8">
           <div className="flex items-start gap-4">
-            <div className="w-12 h-12 bg-[#F0EEE8] rounded-2xl flex items-center justify-center text-[#6B7280] flex-shrink-0">
+            <div className="w-12 h-12 bg-secondary rounded-2xl flex items-center justify-center text-muted-foreground flex-shrink-0">
               {getPolicyIcon(policy.policy_type)}
             </div>
             <div>
-              <h1 className="font-[family-name:var(--font-serif)] text-[36px] tracking-[-0.8px] text-[#0F1117]">
+              <h1 
+                className="font-[family-name:var(--font-serif)] text-[36px] tracking-[-0.8px]"
+                style={{ color: isDarkMode ? '#ffffff' : '#000000' }}
+              >
                 {policy.policy_type} Insurance
               </h1>
-              <p className="text-[14px] text-[#6B7280] mt-2">
+              <p 
+                className="text-[14px] mt-2"
+                style={{ color: isDarkMode ? '#e5e7eb' : '#666666' }}
+              >
                 {policy.file_name} · Analyzed {formatDate(policy.created_at)}
               </p>
             </div>
@@ -268,7 +283,7 @@ function PolicyDetailPage() {
             className="px-6 py-4 rounded-2xl text-center flex-shrink-0 shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_16px_rgba(0,0,0,0.04)]"
             style={{ backgroundColor: scoreColor.bg }}
           >
-            <div className="text-[14px] text-[#6B7280] mb-1">Coverage Score</div>
+            <div className="text-[14px] text-[#ffffff] mb-1">Coverage Score</div>
             <div className="text-[40px] font-bold" style={{ color: scoreColor.text }}>
               {policy.coverage_score}/10
             </div>
@@ -282,7 +297,11 @@ function PolicyDetailPage() {
         <div className="flex items-center gap-2 flex-wrap">
           <Link
             href={`/simulate?id=${policy.id}`}
-            className="inline-flex items-center gap-2 bg-[#1A3FBE] text-white text-[14px] font-medium px-5 py-2.5 rounded-xl hover:bg-[#1535A8] transition-colors"
+            style={{
+              backgroundColor: isDarkMode ? '#ffffff' : '#000000',
+              color: isDarkMode ? '#000000' : '#ffffff',
+            }}
+            className="inline-flex items-center gap-2 text-[14px] font-medium px-5 py-2.5 rounded-xl hover:shadow-lg transition-all"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
@@ -296,7 +315,11 @@ function PolicyDetailPage() {
           </Link>
           <button
             onClick={() => setDeleteConfirm(true)}
-            className="inline-flex items-center gap-2 bg-[#FEE2E2] text-[#DC2626] text-[14px] font-medium px-5 py-2.5 rounded-xl hover:bg-[#FEE2E2]/70 transition-colors"
+            style={{
+              backgroundColor: isDarkMode ? '#ffffff' : '#000000',
+              color: isDarkMode ? '#000000' : '#ffffff',
+            }}
+            className="inline-flex items-center gap-2 text-[14px] font-medium px-5 py-2.5 rounded-xl hover:shadow-lg transition-all"
           >
             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
               <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-9l-1 1H5v2h14V4z" />
@@ -308,27 +331,23 @@ function PolicyDetailPage() {
 
       {/* Delete Confirmation Modal */}
       {deleteConfirm && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl p-8 max-w-[400px] shadow-2xl">
-            <h2 className="font-[family-name:var(--font-serif)] text-[24px] tracking-[-0.5px] text-[#0F1117] mb-2">
-              Delete policy?
-            </h2>
-            <p className="text-[14px] text-[#6B7280] mb-6">
-              This will permanently remove this policy and all associated simulations. This action cannot be undone.
-            </p>
-            <div className="flex items-center gap-3 justify-end">
-              <button
-                onClick={() => setDeleteConfirm(false)}
-                className="text-[14px] text-[#6B7280] font-medium px-5 py-2.5 rounded-xl hover:bg-[#F0EEE8] transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleDelete}
-                className="text-[14px] text-white font-medium px-5 py-2.5 rounded-xl bg-[#DC2626] hover:bg-[#B91C1C] transition-colors"
-              >
-                Delete
-              </button>
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+          <div className="modal-card-enhanced w-full max-w-sm p-6">
+            <div className="space-y-6">
+              <div>
+                <h3 className="text-lg font-semibold text-foreground">Delete policy?</h3>
+                <p className="text-sm text-muted-foreground mt-2">
+                  This action cannot be undone. All associated simulations will be deleted.
+                </p>
+              </div>
+              <div className="flex gap-3">
+                <Button variant="outline" size="sm" fullWidth onClick={() => setDeleteConfirm(false)}>
+                  Cancel
+                </Button>
+                <Button variant="danger" size="sm" fullWidth onClick={handleDelete}>
+                  Delete
+                </Button>
+              </div>
             </div>
           </div>
         </div>
@@ -340,24 +359,32 @@ function PolicyDetailPage() {
           {/* Left Column - Analysis Details */}
           <div className="lg:col-span-2 space-y-8">
             {/* Score Reason Card */}
-            <div className="bg-white border border-[#E5E3DC] rounded-2xl p-8 shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_16px_rgba(0,0,0,0.04)]">
-              <h2 className="font-[family-name:var(--font-serif)] text-[20px] tracking-[-0.4px] text-[#0F1117] mb-4">
+            <div className="bg-card border border-border rounded-2xl p-8 shadow-sm">
+              <h2 
+                className="font-[family-name:var(--font-serif)] text-[20px] tracking-[-0.4px] mb-4"
+                style={{ color: isDarkMode ? '#ffffff' : '#000000' }}
+              >
                 Score Breakdown
               </h2>
-              <p className="text-[14px] text-[#6B7280] leading-relaxed">{policy.score_reason}</p>
+              <p 
+                className="text-[14px] leading-relaxed"
+                style={{ color: isDarkMode ? '#d1d5db' : '#333333' }}
+              >
+                {policy.score_reason}
+              </p>
             </div>
 
             {/* Covered Events */}
             {policy.covered_events && policy.covered_events.length > 0 && (
-              <div className="bg-white border border-[#E5E3DC] rounded-2xl p-8 shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_16px_rgba(0,0,0,0.04)]">
-                <h2 className="font-[family-name:var(--font-serif)] text-[20px] tracking-[-0.4px] text-[#0F1117] mb-4">
+              <div className="bg-card border border-border rounded-2xl p-8 shadow-sm">
+                <h2 className="font-[family-name:var(--font-serif)] text-[20px] tracking-[-0.4px] text-foreground mb-4">
                   ✓ Covered Events
                 </h2>
                 <div className="space-y-2">
                   {policy.covered_events.map((event, idx) => (
-                    <div key={idx} className="flex items-start gap-3 text-[14px] text-[#6B7280]">
-                      <div className="w-5 h-5 rounded-full bg-[#D1FAE5] flex items-center justify-center flex-shrink-0 mt-0.5">
-                        <svg className="w-3 h-3 text-[#047857]" fill="currentColor" viewBox="0 0 24 24">
+                    <div key={idx} className="flex items-start gap-3 text-[14px] text-muted-foreground">
+                  <div className="w-5 h-5 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <svg className="w-3 h-3 text-green-600 dark:text-green-400" fill="currentColor" viewBox="0 0 24 24">
                           <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
                         </svg>
                       </div>
@@ -370,15 +397,15 @@ function PolicyDetailPage() {
 
             {/* Exclusions */}
             {policy.exclusions && policy.exclusions.length > 0 && (
-              <div className="bg-white border border-[#E5E3DC] rounded-2xl p-8 shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_16px_rgba(0,0,0,0.04)]">
-                <h2 className="font-[family-name:var(--font-serif)] text-[20px] tracking-[-0.4px] text-[#0F1117] mb-4">
+              <div className="bg-card border border-border rounded-2xl p-8 shadow-sm">
+                <h2 className="font-[family-name:var(--font-serif)] text-[20px] tracking-[-0.4px] text-foreground mb-4">
                   ✗ Exclusions
                 </h2>
                 <div className="space-y-2">
                   {policy.exclusions.map((exclusion, idx) => (
-                    <div key={idx} className="flex items-start gap-3 text-[14px] text-[#6B7280]">
-                      <div className="w-5 h-5 rounded-full bg-[#FEE2E2] flex items-center justify-center flex-shrink-0 mt-0.5">
-                        <svg className="w-3 h-3 text-[#DC2626]" fill="currentColor" viewBox="0 0 24 24">
+                    <div key={idx} className="flex items-start gap-3 text-[14px] text-muted-foreground">
+                      <div className="w-5 h-5 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <svg className="w-3 h-3 text-red-600 dark:text-red-400" fill="currentColor" viewBox="0 0 24 24">
                           <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
                         </svg>
                       </div>
@@ -391,15 +418,15 @@ function PolicyDetailPage() {
 
             {/* Risky Clauses */}
             {policy.risky_clauses && policy.risky_clauses.length > 0 && (
-              <div className="bg-white border border-[#E5E3DC] rounded-2xl p-8 shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_16px_rgba(0,0,0,0.04)]">
-                <h2 className="font-[family-name:var(--font-serif)] text-[20px] tracking-[-0.4px] text-[#0F1117] mb-4">
+              <div className="bg-card border border-border rounded-2xl p-8 shadow-sm">
+                <h2 className="font-[family-name:var(--font-serif)] text-[20px] tracking-[-0.4px] text-foreground mb-4">
                   ⚠️ Risky Clauses
                 </h2>
                 <div className="space-y-2">
                   {policy.risky_clauses.map((clause, idx) => (
-                    <div key={idx} className="flex items-start gap-3 text-[14px] text-[#6B7280]">
-                      <div className="w-5 h-5 rounded-full bg-[#FEF3C7] flex items-center justify-center flex-shrink-0 mt-0.5">
-                        <svg className="w-3 h-3 text-[#B45309]" fill="currentColor" viewBox="0 0 24 24">
+                    <div key={idx} className="flex items-start gap-3 text-[14px] text-muted-foreground">
+                      <div className="w-5 h-5 rounded-full bg-yellow-100 dark:bg-yellow-900/30 flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <svg className="w-3 h-3 text-yellow-600 dark:text-yellow-400" fill="currentColor" viewBox="0 0 24 24">
                           <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z" />
                         </svg>
                       </div>
@@ -412,18 +439,18 @@ function PolicyDetailPage() {
 
             {/* Full AI Analysis (if available in JSONB) */}
             {policy.analysis && Object.keys(policy.analysis).length > 0 && (
-              <div className="bg-white border border-[#E5E3DC] rounded-2xl p-8 shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_16px_rgba(0,0,0,0.04)]">
+              <div className="bg-card border border-border rounded-2xl p-8 shadow-sm">
                 <div className="flex items-center gap-3 mb-6">
-                  <div className="w-6 h-6 bg-[#EEF2FF] rounded-lg flex items-center justify-center flex-shrink-0">
-                    <svg className="w-4 h-4 text-[#1A3FBE]" fill="currentColor" viewBox="0 0 24 24">
+                  <div className="w-6 h-6 bg-primary/10 dark:bg-primary/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <svg className="w-4 h-4 text-primary" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M4 5h16v2H4V5m0 4h16v2H4V9m0 4h16v2H4v-2m0 4h16v2H4v-2z" />
                     </svg>
                   </div>
-                  <h2 className="font-[family-name:var(--font-serif)] text-[20px] tracking-[-0.4px] text-[#0F1117]">
+                  <h2 className="font-[family-name:var(--font-serif)] text-[20px] tracking-[-0.4px] text-foreground">
                     Full Analysis Report
                   </h2>
                 </div>
-                <div className="bg-[#F9FAFB] rounded-xl p-6 space-y-4 max-h-[500px] overflow-y-auto">
+                <div className="bg-secondary rounded-xl p-6 space-y-4 max-h-[500px] overflow-y-auto">
                   {Object.entries(policy.analysis).map(([key, value]) => renderAnalysisItem(key, value))}
                 </div>
               </div>
@@ -432,24 +459,24 @@ function PolicyDetailPage() {
 
           {/* Right Column - Simulations */}
           <div className="lg:col-span-1">
-            <div className="bg-white border border-[#E5E3DC] rounded-2xl p-8 shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_16px_rgba(0,0,0,0.04)] sticky top-8">
-              <h2 className="font-[family-name:var(--font-serif)] text-[20px] tracking-[-0.4px] text-[#0F1117] mb-6">
+            <div className="bg-card border border-border rounded-2xl p-8 shadow-sm sticky top-8">
+              <h2 className="font-[family-name:var(--font-serif)] text-[20px] tracking-[-0.4px] text-foreground mb-6">
                 Simulations
               </h2>
 
               {simulations.length === 0 ? (
                 <div className="text-center py-8">
-                  <div className="w-12 h-12 bg-[#F0EEE8] rounded-xl flex items-center justify-center mx-auto mb-3">
-                    <svg className="w-6 h-6 text-[#9CA3AF]" fill="currentColor" viewBox="0 0 24 24">
+                  <div className="w-12 h-12 bg-secondary rounded-xl flex items-center justify-center mx-auto mb-3">
+                    <svg className="w-6 h-6 text-muted-foreground" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M13 10V3L4 14h7v7l9-11h-7z" />
                     </svg>
                   </div>
-                  <p className="text-[13px] text-[#6B7280] mb-4">
+                  <p className="text-[13px] text-muted-foreground mb-4">
                     No simulations yet. Run a scenario to test coverage.
                   </p>
                   <Link
                     href={`/simulate?id=${policy.id}`}
-                    className="text-[12px] text-[#1A3FBE] font-medium hover:underline"
+                    className="text-[12px] text-primary font-medium hover:underline"
                   >
                     Run Simulation →
                   </Link>
@@ -461,8 +488,8 @@ function PolicyDetailPage() {
                       key={sim.id}
                       className={`p-3 rounded-lg border-l-4 ${
                         sim.coverage_result
-                          ? 'bg-[#F0FDF4] border-green-400'
-                          : 'bg-[#FEF2F2] border-red-400'
+                          ? 'bg-green-50 dark:bg-green-900/20 border-green-400'
+                          : 'bg-red-50 dark:bg-red-900/20 border-red-400'
                       }`}
                     >
                       <div className="flex items-start gap-2 mb-2">
@@ -488,18 +515,18 @@ function PolicyDetailPage() {
                           </div>
                         )}
                         <div className="flex-1">
-                          <div className="text-[12px] font-medium text-[#0F1117]">
+                          <div className="text-[12px] font-medium text-foreground">
                             {sim.coverage_result ? 'Covered' : 'Not Covered'}
                           </div>
-                          <div className="text-[11px] text-[#6B7280] mt-0.5">
+                          <div className="text-[11px] text-muted-foreground mt-0.5">
                             {new Date(sim.created_at).toLocaleDateString()}
                           </div>
                         </div>
                       </div>
-                      <div className="text-[12px] text-[#6B7280] mb-1 font-medium">Scenario:</div>
-                      <div className="text-[11px] text-[#6B7280] mb-2">{sim.scenario}</div>
-                      <div className="text-[12px] text-[#6B7280] mb-1 font-medium">Explanation:</div>
-                      <div className="text-[11px] text-[#6B7280]">{sim.explanation}</div>
+                      <div className="text-[12px] text-muted-foreground mb-1 font-medium">Scenario:</div>
+                      <div className="text-[11px] text-muted-foreground mb-2">{sim.scenario}</div>
+                      <div className="text-[12px] text-muted-foreground mb-1 font-medium">Explanation:</div>
+                      <div className="text-[11px] text-muted-foreground">{sim.explanation}</div>
                     </div>
                   ))}
                 </div>
@@ -510,7 +537,7 @@ function PolicyDetailPage() {
       </div>
 
       {/* Footer */}
-      <footer className="border-t border-[#E5E3DC] text-center py-6 text-xs text-[#9CA3AF]">
+      <footer className="border-t border-border text-center py-6 text-xs text-muted-foreground">
         PolicyLens v1.0.0 · AI-Powered Insurance Policy Analysis · Built with FastAPI + Next.js
       </footer>
     </div>

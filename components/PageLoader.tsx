@@ -23,10 +23,10 @@ export function PageLoader() {
   if (!isLoading) return null;
 
   return (
-    <div className="fixed inset-0 bg-white bg-opacity-50 backdrop-blur-sm z-50 flex items-center justify-center pointer-events-none">
+    <div className="fixed inset-0 bg-white/50 dark:bg-slate-950/50 backdrop-blur-sm z-50 flex items-center justify-center pointer-events-none">
       <div className="relative w-16 h-16">
         {/* Spinning circle loader */}
-        <div className="absolute inset-0 border-4 border-gray-200 border-t-blue-600 rounded-full animate-spin"></div>
+        <div className="absolute inset-0 border-4 border-gray-200 dark:border-gray-700 border-t-blue-600 dark:border-t-blue-500 rounded-full animate-spin"></div>
       </div>
     </div>
   );

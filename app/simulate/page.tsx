@@ -5,6 +5,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { apiFetch, isAuthenticated } from '@/lib/auth';
 import { SimulateResult } from '@/types/analysis';
+import { AnimatedLoader } from '@/components/AnimatedLoader';
 
 export const dynamic = 'force-dynamic';
 
@@ -24,6 +25,7 @@ interface SimulatePolicy {
 export default function SimulatePage() {
   const [scenario, setScenario] = useState('');
   const [loading, setLoading] = useState(false);
+  const [loadingStep, setLoadingStep] = useState(0);
   const [result, setSimulateResult] = useState<SimulateResult | null>(null);
   const [error, setError] = useState('');
   const [policies, setPolicies] = useState<SimulatePolicy[]>([]);
@@ -46,6 +48,18 @@ export default function SimulatePage() {
     observer.observe(document.documentElement, { attributes: true });
     return () => observer.disconnect();
   }, []);
+
+  // Animate loading step
+  useEffect(() => {
+    if (loading) {
+      const interval = setInterval(() => {
+        setLoadingStep((prev) => (prev < 3 ? prev + 1 : prev));
+      }, 900);
+      return () => clearInterval(interval);
+    } else {
+      setLoadingStep(0);
+    }
+  }, [loading]);
   useEffect(() => {
     if (!isAuthenticated()) {
       router.push("/login");
@@ -309,15 +323,18 @@ export default function SimulatePage() {
 
         {/* LOADING STATE */}
         {loading && (
-          <div className="bg-card border border-border rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_16px_rgba(0,0,0,0.04)] dark:shadow-[0_1px_3px_rgba(0,0,0,0.3),0_4px_16px_rgba(0,0,0,0.2)] p-14 text-center">
-            <div className="w-12 h-12 rounded-full border-[3px] border-border border-t-blue-700 dark:border-t-blue-300 animate-spin mx-auto mb-6" />
-            <h2 className="font-[family-name:var(--font-serif)] text-2xl text-foreground tracking-[-0.5px] mb-1.5">
-              Evaluating your claim scenario…
-            </h2>
-            <p className="text-sm text-muted-foreground">
-              Checking against policy terms…
-            </p>
-          </div>
+          <AnimatedLoader
+            isLoading={true}
+            title="Evaluating your claim scenario…"
+            subtitle="Checking against policy terms…"
+            steps={[
+              'Analyzing claim scenario…',
+              'Matching against policy coverage…',
+              'Calculating approval chance…',
+              'Generating detailed reasoning…',
+            ]}
+            currentStep={loadingStep}
+          />
         )}
 
         {/* RESULTS STATE */}

@@ -70,9 +70,9 @@ export function UploadCard({
       transition={{ duration: 0.6, delay: 0.15, ease: "easeOut" }}
     >
       <div className="relative rounded-2xl bg-card border border-border overflow-hidden shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_16px_rgba(0,0,0,0.04)]">
-        <div className="h-1 w-full bg-gradient-to-r from-primary via-accent to-primary" />
+        <div className="h-0.5 w-full bg-gradient-to-r from-primary via-accent to-primary" />
 
-        <div className="p-4 md:p-5">
+        <div className="p-2 md:p-3">
           {/* Upload zone */}
           <div
             onDragEnter={(e) => handleDrag(e, true)}
@@ -102,28 +102,28 @@ export function UploadCard({
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="flex flex-col items-center py-7"
+                  className="flex flex-col items-center py-4"
                 >
                   <motion.div
                     animate={isDragging ? { scale: 1.15, rotate: -5 } : { scale: 1, rotate: 0 }}
                     transition={{ type: "spring", stiffness: 300 }}
-                    className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary/15 to-accent/10 flex items-center justify-center mb-4"
+                    className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary/15 to-accent/10 flex items-center justify-center mb-2"
                   >
                     <Upload className="w-6 h-6 text-primary" />
                   </motion.div>
 
-                  <p className="text-sm font-medium text-foreground">
+                  <p className="text-xs font-medium text-foreground">
                     {isDragging ? "Release to upload" : "Drop your policy PDF here"}
                   </p>
-                  <p className="text-sm text-muted-foreground mt-1.5">
+                  <p className="text-xs text-muted-foreground mt-1">
                     or{" "}
                     <span className="text-primary font-medium underline underline-offset-4 decoration-primary/30">
                       browse files
                     </span>
                   </p>
 
-                  <div className="flex items-center gap-3 mt-4">
-                    <span className="flex items-center gap-1.5 text-xs text-muted-foreground px-2 py-0.5 rounded-md bg-secondary">
+                  <div className="flex items-center gap-2 mt-2">
+                    <span className="flex items-center gap-1 text-xs text-muted-foreground px-2 py-0.5 rounded-md bg-secondary">
                       <FileText className="w-3 h-3" />
                       PDF only
                     </span>
@@ -139,13 +139,13 @@ export function UploadCard({
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0 }}
-                  className="flex items-center gap-4 py-6 px-5"
+                  className="flex items-center gap-4 py-3.5 px-5"
                 >
                   <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
                     <FileText className="w-5 h-5 text-primary" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-foreground truncate">{fileName}</p>
+                    <p className="text-xs font-medium text-foreground truncate">{fileName}</p>
                     <p className="text-xs text-muted-foreground mt-0.5">
                       {fileSize} · Ready to analyze
                     </p>
@@ -169,7 +169,7 @@ export function UploadCard({
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="flex items-center gap-3 bg-red-100 dark:bg-red-950 border border-red-300 dark:border-red-800 rounded-xl p-3.5 px-4 mt-4 text-[13px] text-red-700 dark:text-red-300"
+              className="flex items-center gap-3 bg-red-100 dark:bg-red-950 border border-red-300 dark:border-red-800 rounded-xl p-3 px-4 mt-1.5 text-[13px] text-red-700 dark:text-red-300"
             >
               <svg
                 className="w-[16px] h-[16px] flex-shrink-0"
@@ -184,7 +184,7 @@ export function UploadCard({
 
           {/* Analyze button */}
           <motion.div
-            className="relative mt-6"
+            className="relative mt-2.5"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
@@ -213,7 +213,7 @@ export function UploadCard({
                 backgroundColor: isDarkMode ? '#ffffff' : '#000000',
                 color: isDarkMode ? '#000000' : '#ffffff',
               }}
-              className="relative w-full flex items-center justify-center gap-2.5 py-3.5 px-6 rounded-xl font-semibold text-sm transition-all duration-200 overflow-hidden hover:shadow-2xl hover:-translate-y-px disabled:cursor-not-allowed disabled:opacity-60"
+              className="relative w-full flex items-center justify-center gap-2.5 py-2 px-6 rounded-xl font-semibold text-xs transition-all duration-200 overflow-hidden hover:shadow-2xl hover:-translate-y-px disabled:cursor-not-allowed disabled:opacity-60"
             >
               {/* Shimmer effect background */}
               {file && !isLoading && (

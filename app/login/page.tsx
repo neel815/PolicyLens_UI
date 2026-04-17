@@ -4,6 +4,10 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { saveToken, saveUser } from '@/lib/auth';
+import { Button } from '@/components/Button';
+import { Input } from '@/components/Input';
+import { Card } from '@/components/Card';
+import { Shield, Mail, Lock } from 'lucide-react';
 
 interface LoginFormData {
   username: string;
@@ -46,11 +50,9 @@ export default function LoginPage() {
         throw new Error(json.detail || 'Login failed');
       }
 
-      // Save token and user info
       saveToken(json.access_token);
       saveUser(json.user);
 
-      // Redirect to home/dashboard
       router.push('/');
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : 'Login failed';
@@ -61,84 +63,68 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F7F6F2] flex items-center justify-center px-6">
-      <div className="w-full max-w-[400px]">
+    <div className="min-h-screen bg-background flex items-center justify-center px-4 py-12">
+      <div className="w-full max-w-[420px]">
         {/* Header */}
-        <div className="text-center mb-10">
-          <h1 className="font-[family-name:var(--font-serif)] text-[42px] tracking-[-1px] text-[#0F1117] mb-2">
-            PolicyLens
-          </h1>
-          <p className="text-[14px] text-[#6B7280]">Sign in to access your analyses</p>
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-primary/10 mb-4">
+            <Shield className="w-6 h-6 text-primary" />
+          </div>
+          <h1 className="text-3xl font-semibold text-foreground mb-2">PolicyLens</h1>
+          <p className="text-sm text-muted-foreground">AI-Powered Insurance Analysis</p>
         </div>
 
-        {/* Login Form Card */}
-        <div className="bg-white border border-[#E5E3DC] rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_16px_rgba(0,0,0,0.04)] p-8">
-          <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-            {/* Username Field */}
-            <div>
-              <label className="text-[13px] font-medium text-[#0F1117] mb-2 block">
-                Username
-              </label>
-              <input
-                type="text"
-                name="username"
-                value={formData.username}
-                onChange={handleChange}
-                placeholder="your username"
-                required
-                className="w-full px-4 py-2.5 bg-[#F7F6F2] border border-[#E5E3DC] rounded-lg text-[14px] text-[#0F1117] placeholder-[#9CA3AF] focus:outline-none focus:border-[#1A3FBE] transition-colors"
-              />
-            </div>
-
-            {/* Password Field */}
-            <div>
-              <label className="text-[13px] font-medium text-[#0F1117] mb-2 block">
-                Password
-              </label>
-              <input
-                type="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                placeholder="your password"
-                required
-                className="w-full px-4 py-2.5 bg-[#F7F6F2] border border-[#E5E3DC] rounded-lg text-[14px] text-[#0F1117] placeholder-[#9CA3AF] focus:outline-none focus:border-[#1A3FBE] transition-colors"
-              />
-            </div>
-
-            {/* Error Message */}
+        {/* Login Card */}
+        <Card className="mb-6">
+          <form onSubmit={handleSubmit} className="space-y-5">
             {error && (
-              <div className="flex items-center gap-3 bg-[#FEF2F2] border border-red-200 rounded-lg p-3 text-[13px] text-[#DC2626]">
-                <svg
-                  className="w-[16px] h-[16px] flex-shrink-0"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
-                </svg>
+              <div className="p-4 rounded-lg bg-red-500/10 border border-red-500/20 text-sm text-red-600 dark:text-red-400">
                 {error}
               </div>
             )}
 
-            {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-[#1A3FBE] text-white rounded-lg py-2.5 text-[14px] font-medium transition-all duration-200 hover:bg-[#1535A8] disabled:bg-[#F0EEE8] disabled:text-[#9CA3AF] disabled:cursor-not-allowed"
-            >
-              {loading ? 'Signing in...' : 'Sign In'}
-            </button>
-          </form>
+            <Input
+              label="Username"
+              name="username"
+              type="text"
+              placeholder="Enter your username"
+              value={formData.username}
+              onChange={handleChange}
+              icon={<Mail className="w-4 h-4" />}
+              required
+            />
 
-          {/* Signup Link */}
-          <div className="mt-6 text-center">
-            <p className="text-[13px] text-[#6B7280]">
-              Don't have an account?{' '}
-              <Link href="/register" className="text-[#1A3FBE] font-medium hover:underline">
-                Sign up
-              </Link>
-            </p>
-          </div>
+            <Input
+              label="Password"
+              name="password"
+              type="password"
+              placeholder="Enter your password"
+              value={formData.password}
+              onChange={handleChange}
+              icon={<Lock className="w-4 h-4" />}
+              required
+            />
+
+            <Button
+              type="submit"
+              variant="primary"
+              size="lg"
+              fullWidth
+              isLoading={loading}
+            >
+              Sign In
+            </Button>
+          </form>
+        </Card>
+
+        {/* Footer */}
+        <div className="text-center">
+          <p className="text-sm text-muted-foreground">
+            Don't have an account?{' '}
+            <Link href="/register" className="text-primary hover:text-primary/80 font-medium transition-colors">
+              Sign up
+            </Link>
+          </p>
         </div>
       </div>
     </div>

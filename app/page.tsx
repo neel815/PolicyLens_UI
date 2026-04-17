@@ -1,16 +1,19 @@
-"use client";
+'use client';
 
-import {
-  useState,
-  useEffect,
-} from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { savePolicy } from "@/lib/storage";
-import { getAuthHeader, isAuthenticated } from "@/lib/auth";
-import { SavedPolicy } from "@/types/analysis";
-import { HeroSection } from "@/components/HeroSection";
-import { UploadCard } from "@/components/UploadCard";
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { getAuthHeader, isAuthenticated } from '@/lib/auth';
+import { SavedPolicy } from '@/types/analysis';
+import { savePolicy } from '@/lib/storage';
+import { Button } from '@/components/Button';
+import { Card } from '@/components/Card';
+import { Badge } from '@/components/Badge';
+import { Section } from '@/components/Section';
+import { HeroSection } from '@/components/HeroSection';
+import { UploadCard } from '@/components/UploadCard';
+import { AnimatedLoader } from '@/components/AnimatedLoader';
+import { Upload, CheckCircle2, AlertTriangle, Zap, FileText, Shield } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 // TypeScript Interfaces
 interface AnalysisData {
@@ -130,7 +133,7 @@ export default function Home() {
       const newPolicy: SavedPolicy = {
         id: crypto.randomUUID(),
         fileName: file.name,
-        fileSize: (file.size / (1024 * 1024)).toFixed(1) + ' MB',
+        fileSize: formatFileSize(file.size),
         policyType: detectPolicyType(file.name),
         analyzedAt: new Date().toISOString(),
         data: data.data,
@@ -244,50 +247,18 @@ export default function Home() {
 
         {/* LOADING STATE */}
         {appState === "loading" && (
-          <div className="bg-white border border-[#E5E3DC] rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_16px_rgba(0,0,0,0.04)] p-14 text-center">
-            <div className="w-12 h-12 rounded-full border-[3px] border-[#E5E3DC] border-t-[#1A3FBE] animate-spin mx-auto mb-6" />
-            <h2 className="font-[family-name:var(--font-serif)] text-2xl text-[#0F1117] tracking-[-0.5px] mb-1.5">
-              Analyzing your policy…
-            </h2>
-            <p className="text-sm text-[#6B7280]">
-              This usually takes 10–20 seconds
-            </p>
-
-            <div className="max-w-[280px] mx-auto mt-7 flex flex-col gap-2.5 text-left">
-              {[
-                "PDF extracted successfully",
-                "Reading policy clauses…",
-                "Identifying coverage & exclusions",
-                "Calculating coverage score",
-              ].map((label, index) => (
-                <div
-                  key={index}
-                  className="flex items-center gap-2.5 text-[13px]"
-                >
-                  <div
-                    className={`w-2 h-2 rounded-full flex-shrink-0 ${
-                      index < loadingStep
-                        ? "bg-[#059669]"
-                        : index === loadingStep
-                          ? "bg-[#1A3FBE] animate-pulse"
-                          : "bg-[#E5E3DC]"
-                    }`}
-                  />
-                  <span
-                    className={
-                      index < loadingStep
-                        ? "text-[#059669]"
-                        : index === loadingStep
-                          ? "text-[#0F1117]"
-                          : "text-[#9CA3AF]"
-                    }
-                  >
-                    {label}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
+          <AnimatedLoader
+            isLoading={true}
+            title="Analyzing your policy…"
+            subtitle="This usually takes 10–20 seconds"
+            steps={[
+              "PDF extracted successfully",
+              "Reading policy clauses…",
+              "Identifying coverage & exclusions",
+              "Calculating coverage score",
+            ]}
+            currentStep={loadingStep}
+          />
         )}
 
         {/* RESULTS STATE */}

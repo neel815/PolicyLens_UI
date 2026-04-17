@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Sparkles, Zap } from 'lucide-react';
 import { apiFetch, isAuthenticated } from '@/lib/auth';
+import { AnimatedLoader } from '@/components/AnimatedLoader';
 
 // Interfaces
 interface BattlePolicy {
@@ -642,34 +643,18 @@ export default function BattlePage() {
 
         {/* LOADING STATE */}
         {battling && (
-          <div className="bg-card border border-border rounded-2xl p-14 text-center mt-6 shadow-[0_1px_3px_rgba(0,0,0,0.06),0_4px_16px_rgba(0,0,0,0.04)] dark:shadow-[0_1px_3px_rgba(0,0,0,0.3),0_4px_16px_rgba(0,0,0,0.2)]">
-            <div className="w-12 h-12 rounded-full border-[3px] border-border border-t-primary animate-spin mx-auto mb-6" />
-            <h2 className="font-[family-name:var(--font-serif)] text-[24px] tracking-[-0.5px] text-foreground mb-1.5">
-              Battling policies…
-            </h2>
-            <p className="text-[14px] text-muted-foreground mb-6">
-              AI is reading every clause to pick a winner.
-            </p>
-
-            {/* Loading steps */}
-            <div className="space-y-2 max-w-[200px] mx-auto">
-              {[
-                'Reading Policy A…',
-                'Reading Policy B…',
-                'Comparing across 6 categories…',
-                'Calculating final verdict…',
-              ].map((step, idx) => (
-                <div
-                  key={idx}
-                  className={`text-[12px] transition-opacity ${
-                    idx <= loadingStep ? 'text-muted-foreground' : 'text-muted-foreground/60'
-                  }`}
-                >
-                  {idx < loadingStep && '✓ '}{step}
-                </div>
-              ))}
-            </div>
-          </div>
+          <AnimatedLoader
+            isLoading={true}
+            title="Battling policies…"
+            subtitle="AI is reading every clause to pick a winner."
+            steps={[
+              'Reading Policy A…',
+              'Reading Policy B…',
+              'Comparing across 6 categories…',
+              'Calculating final verdict…',
+            ]}
+            currentStep={loadingStep}
+          />
         )}
 
         {/* RESULTS STATE */}

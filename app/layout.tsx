@@ -7,6 +7,7 @@ import {
 import "./globals.css";
 import { Navbar } from '@/components/Navbar';
 import { PageLoader } from '@/components/PageLoader';
+import { ThemeScript } from '@/components/ThemeScript';
 
 const instrumentSerif = Instrument_Serif({
   subsets: ["latin"],
@@ -38,24 +39,9 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function() {
-                const stored = localStorage.getItem('theme');
-                const isDark = stored === 'dark';
-                const htmlElement = document.documentElement;
-                if (isDark) {
-                  htmlElement.classList.add('dark');
-                } else {
-                  htmlElement.classList.remove('dark');
-                }
-              })();
-            `,
-          }}
-        />
       </head>
       <body className="min-h-screen bg-background font-[family-name:var(--font-sans)] transition-colors duration-300">
+        <ThemeScript />
         <Suspense fallback={null}>
           <PageLoader />
         </Suspense>
