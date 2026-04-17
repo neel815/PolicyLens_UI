@@ -1,0 +1,11 @@
+{
+  "framework": "nextjs",
+  "env": {
+    "NEXT_PUBLIC_API_BASE_URL": {
+      "description": "Backend API base URL (e.g., https://your-railway-backend.railway.app)"
+    },
+    "NEXT_PUBLIC_API_PORT": {
+      "description": "Backend API port (default: 8000)"
+    }
+  }
+}
