@@ -32,15 +32,31 @@ export default function Dashboard() {
 
   async function fetchPolicies() {
     setLoading(true);
+    const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/api/policies`;
+    console.log('📍 Fetching from:', apiUrl);
+    
     try {
-      const res = await apiFetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/policies`
-      );
-      if (!res.ok) throw new Error('Failed to fetch');
+      const res = await apiFetch(apiUrl);
+      
+      // Log response status for debugging
+      console.log('✅ Response status:', res.status, res.statusText);
+      
+      if (!res.ok) {
+        const errorData = await res.text();
+        console.error('❌ API Error:', {
+          status: res.status,
+          statusText: res.statusText,
+          body: errorData
+        });
+        throw new Error(`API error: ${res.status} ${res.statusText} - ${errorData}`);
+      }
+      
       const data = await res.json();
-      setPolicies(data);
+      console.log('✅ Data received:', data);
+      setPolicies(data || []);
     } catch (err) {
-      console.error('Failed to load policies:', err);
+      const errorMsg = err instanceof Error ? err.message : 'Unknown error';
+      console.error('❌ Request failed:', errorMsg);
     } finally {
       setLoading(false);
     }
