@@ -1,219 +1,36 @@
-# PolicyLens - AI-Powered Insurance Policy Analyzer MVP
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-A full-stack web application that analyzes insurance policy PDFs using OpenAI's GPT-4o-mini model to extract covered events, exclusions, risky clauses, and provide a coverage score.
+## Getting Started
 
-## 🏗️ Architecture
-
-**Clean Backend Structure:**
-```
-routes/ → controllers/ → services/ → validators/ → utils/
-```
-
-- **routes/**: API endpoint definitions
-- **controllers/**: Request handling and validation
-- **services/**: Business logic and OpenAI integration
-- **validators/**: Input validation
-- **utils/**: Helper functions (PDF extraction, etc.)
-
-**Frontend:**
-- Next.js 14 with TypeScript
-- Tailwind CSS with light theme
-- Component-based architecture
-- Real-time upload and analysis
-
-## 🚀 Quick Start
-
-### Prerequisites
-- Python 3.9+
-- Node.js 18+
-- OpenAI API Key
-
-### Backend Setup
+First, run the development server:
 
 ```bash
-cd backend
-pip install -r requirements.txt
-cp .env.example .env
-# Add your OPENAI_API_KEY to .env
-uvicorn main:app --reload --port 8000
-```
-
-Backend will be available at `http://localhost:8000`
-
-Swagger Docs: `http://localhost:8000/docs`
-
-### Frontend Setup
-
-```bash
-cd frontend
-npm install
-cp .env.example .env.local
 npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
 ```
 
-Frontend will be available at `http://localhost:3000`
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-## 📋 Environment Variables
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-### Backend (`.env`)
-```env
-OPENAI_API_KEY=your_key_here
-```
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-### Frontend (`.env.local`)
-```env
-NEXT_PUBLIC_API_URL=http://localhost:8000
-```
+## Learn More
 
-## 🎯 Features
+To learn more about Next.js, take a look at the following resources:
 
-- **PDF Upload**: Drag & drop or select insurance policy PDFs
-- **AI Analysis**: GPT-4o-mini analyzes policies with JSON mode
-- **Coverage Score**: Visual 0-10 rating with animated progress bar
-- **Covered Events**: List of what's included
-- **Exclusions**: Important limitations to know
-- **Risky Clauses**: Potentially problematic terms
-- **Error Handling**: User-friendly error messages
-- **File Validation**: Size limits (max 10MB) and type checking
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-## 🔌 API Endpoints
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-### POST `/api/analyze`
-Analyze an insurance policy PDF.
+## Deploy on Vercel
 
-**Request:**
-```
-multipart/form-data
-- file: PDF file (max 10MB, required)
-```
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-**Response (Success):**
-```json
-{
-  "success": true,
-  "data": {
-    "covered_events": ["string array"],
-    "exclusions": ["string array"],
-    "risky_clauses": ["string array"],
-    "coverage_score": 7
-  }
-}
-```
-
-**Response (Error):**
-```json
-{
-  "success": false,
-  "error": "human readable error message"
-}
-```
-
-## 🎨 Design System
-
-- **Theme**: Light mode only
-- **Primary Color**: #2563EB (Blue)
-- **Background**: #F9FAFB
-- **Typography**: DM Sans (Google Fonts)
-- **Spacing**: Consistent padding/margins
-- **Shadows**: Subtle (shadow-sm)
-- **Rounded Corners**: 2xl (16px)
-
-## 📦 Dependencies
-
-### Backend
-- `fastapi` - Web framework
-- `uvicorn` - ASGI server
-- `pymupdf` - PDF text extraction
-- `openai` - OpenAI API client
-- `python-dotenv` - Environment variables
-- `python-multipart` - File uploads
-
-### Frontend
-- `next` - React framework
-- `react` - UI library
-- `tailwindcss` - Styling
-- `lucide-react` - Icons
-- `typescript` - Type safety
-
-## 🧪 Testing Checklist
-
-- [ ] Backend starts successfully
-- [ ] Frontend starts successfully
-- [ ] CORS working (no browser console errors)
-- [ ] Valid PDF → Returns complete analysis
-- [ ] Non-PDF file → 400 error
-- [ ] PDF > 10MB → Rejected before upload
-- [ ] Empty PDF → 400 error with message
-- [ ] Network error → User sees error message
-- [ ] Analysis displays all 4 sections correctly
-
-## 🚫 What's NOT Included
-
-- Database
-- Authentication/Authorization
-- User accounts
-- File storage
-- PDF chunking for large documents
-- Multiple analysis types
-- History/saved analyses
-
-## 🔐 Security Notes
-
-- Store `OPENAI_API_KEY` securely (never commit to git)
-- File size validated on backend (10MB limit)
-- PDF type checking (`.pdf` extension + MIME type)
-- Error messages sanitized
-
-## 📝 Error Codes
-
-- **400 Bad Request**: Invalid PDF, missing file, file too large, empty PDF text
-- **500 Internal Server Error**: OpenAI API error, JSON parse error
-
-## 🚀 Deployment
-
-### Environment Variables
-Update `.env` (backend) and `.env.local` (frontend) with production values.
-
-### Backend
-```bash
-uvicorn main:app --host 0.0.0.0 --port 8000
-```
-
-### Frontend
-```bash
-npm run build
-npm start
-```
-
-## 📚 Additional Resources
-
-- [FastAPI Documentation](https://fastapi.tiangolo.com/)
-- [Next.js Documentation](https://nextjs.org/docs)
-- [OpenAI API Docs](https://platform.openai.com/docs)
-- [Tailwind CSS Docs](https://tailwindcss.com/docs)
-- [PyMuPDF Documentation](https://pymupdf.readthedocs.io/)
-
-## 🎯 Next Steps for Enhancement
-
-1. Add authentication (JWT tokens)
-2. Implement database (PostgreSQL)
-3. Save analysis history
-4. Add more AI features (policy comparison, terms extraction)
-5. Multi-language support
-6. Mobile app version
-7. Batch PDF processing
-8. Custom analysis types
-
-## 📄 License
-
-MIT
-
-## 🤝 Support
-
-For issues or questions, please refer to the respective framework documentation or create an issue in the repository.
-
----
-
-**Version**: 1.0.0  
-**Last Updated**: April 2, 2026  
-**Status**: MVP Ready
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
