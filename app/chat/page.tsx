@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { apiFetch } from '@/lib/auth';
+import { Suspense } from 'react';
 
 interface Policy {
   id: number;
@@ -22,6 +23,29 @@ interface ChatMessage {
 }
 
 export default function ChatPage() {
+  return (
+    <Suspense fallback={<ChatPageFallback />}>
+      <ChatPageContent />
+    </Suspense>
+  );
+}
+
+function ChatPageFallback() {
+  return (
+    <div className="min-h-screen p-8" style={{ backgroundColor: '#F7F6F2' }}>
+      <div className="max-w-3xl mx-auto">
+        <h1 className="text-4xl font-bold mb-8" style={{ color: '#1A3FBE' }}>
+          Chat with Your Policy
+        </h1>
+        <div className="text-center py-12">
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ChatPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [policies, setPolicies] = useState<Policy[]>([]);
@@ -288,7 +312,7 @@ export default function ChatPage() {
                     >
                       <p className="text-sm mb-2">{msg.text}</p>
                       {msg.type === 'ai' && (
-                        <div className="mt-4 pt-4 border-t" style={{ borderColor: msg.type === 'user' ? 'rgba(255,255,255,0.3)' : '#E0E0E0' }}>
+                        <div className="mt-4 pt-4 border-t" style={{ borderColor: '#E0E0E0' }}>
                           <div className="space-y-1 text-xs">
                             <div className="flex items-center gap-2">
                               <span className="font-medium">Confidence:</span>
