@@ -1,6 +1,0 @@
-{
-  "installCommand": "git submodule update --init --recursive && cd frontend && npm install",
-  "buildCommand": "cd frontend && npm run build",
-  "outputDirectory": "frontend/.next",
-  "framework": "nextjs"
-}
